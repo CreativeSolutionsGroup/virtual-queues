@@ -1,139 +1,283 @@
 import React, { createRef } from "react";
 import ReactDOM from "react-dom";
 
-import { Sticky, Card } from "semantic-ui-react";
+import { Sticky } from "semantic-ui-react";
 
 import TitleBar from "./components/titlebar";
-import Attraction from "./components/attraction";
+import Events from "./components/events";
+import StudentModal from "./components/studentModal";
+import HelpModal from "./components/helpModal";
+import CardModal from "./components/cardModal";
 
 import "./index.css";
 import "semantic-ui-css/semantic.min.css";
 
-import christmas from "./images/christmas.jpg";
-
 class App extends React.Component {
   contextRef = createRef();
+  profileRef = createRef();
+  helpModalRef = createRef();
+  attractionModalRef = createRef();
 
-  render() {
-    fetch("http://18.222.7.110:3000/api/engagements")
+  state = {
+    error: null,
+    loadedAttractions: false,
+    loadedSlots: false,
+    student: {
+      id: undefined,
+      tickets: [],
+    },
+    attractions: {},
+    slots: {},
+  };
+  apiBaseURL = "http://18.222.7.110:3000/api";
+
+  constructor(props) {
+    super(props);
+
+    // Modals
+    this.showStudentModal = this.showStudentModal.bind(this);
+    this.showHelpModal = this.showHelpModal.bind(this);
+    this.showAttractionModal = this.showAttractionModal.bind(this);
+
+    // General data retrieval
+    this.getAttractionSlots = this.getAttractionSlots.bind(this);
+    this.getAllAttractions = this.getAllAttractions.bind(this);
+
+    // Handlers for student profile
+    this.handleModalIdSubmit = this.handleModalIdSubmit.bind(this);
+    this.handleProfileRefresh = this.handleProfileRefresh.bind(this);
+    this.handleTicketRemove = this.handleTicketRemove.bind(this);
+  }
+
+  showAttractionModal() {
+    this.attractionModalRef.current.setState({ open: true });
+  }
+
+  showHelpModal() {
+    if (this.helpModalRef.current === null) {
+      console.log("Failing to show modal");
+      return;
+    }
+
+    this.helpModalRef.current.setState({ open: true });
+  }
+
+  /**
+   * Opens the student account modal
+   */
+  showStudentModal() {
+    if (this.state.student.id !== undefined) {
+      // Only retrieve new tickets if the user ID is set
+      this.handleProfileRefresh();
+    }
+
+    // Retrieve tickes and then update the modal with the current app state
+    this.profileRef.current.setState({ open: true });
+  }
+
+  /**
+   * Retrieve tickets based on user ID
+   *
+   * @returns Promise from API retrieval
+   */
+  getStudentTickets() {
+    return fetch(`${this.apiBaseURL}/tickets/`)
       .then((res) => res.json())
       .then(
         (res) => {
-          console.log(res);
+          console.log("Received tickets:", res);
+
+          // Filter tickets specific to this student
+          const userTickets = res.data.filter(
+            (val) => val.student_id.toString() === this.state.student.id
+          );
+
+          // Update state
+          this.setState((prevState) => ({
+            student: { ...prevState.student, tickets: userTickets },
+          }));
+        },
+        (err) => console.error(err)
+      );
+  }
+
+  getAttractionSlots() {
+    fetch(this.apiBaseURL + "/slots")
+      .then((res) => res.json())
+      .then(
+        (res) => {
+          if (res.status !== "success") {
+            console.error("Failed to retrieve slots");
+            console.error("Error:", res.message);
+            return;
+          }
+
+          // Reduce array to object with attraction ID as key and all slots
+          // for each attraction
+          let initVal = {};
+          let slots = res.data.reduce(
+            (acc, val) => ({
+              ...acc,
+              [val.attraction_id]: [...(acc[val.attraction_id] || []), val],
+            }),
+            initVal
+          );
+          console.debug("Slots:", slots);
+
+          // Update with retrieved slots
+          this.setState({
+            loadedSlots: true,
+            error: "",
+            slots: slots,
+          });
         },
         (err) => {
+          console.error("Failed to retrieve slots");
+          console.error(err);
+          this.setState({ loadedSlots: true, err: "Failed to load slots" });
+        }
+      );
+  }
+
+  getAllAttractions() {
+    // Get current attractions
+    fetch(this.apiBaseURL + "/attractions")
+      .then((res) => res.json())
+      .then(
+        (res) => {
+          if (res.status !== "success") {
+            console.error("Failed to retrieve attractions");
+            console.error("Error:", res.message);
+            return;
+          }
+
+          // Indicate attractions have been loaded
+          console.debug("Attractions:", res.data);
+          let attractions = res.data.reduce((acc, val) => {
+            acc[val._id] = val;
+            return acc;
+          }, {});
+          this.setState({
+            loadedAttractions: true,
+            attractions: attractions,
+          });
+        },
+        (err) => {
+          console.error("Failed to retrieve attractions");
+          console.error(err);
+          this.setState({
+            loadedAttractions: true,
+            attractions: {},
+            error: "Failed to load attractions",
+          });
+        }
+      );
+  }
+
+  /**
+   * Updates app's student ID
+   *
+   * @param {string} id New student ID string
+   */
+  handleModalIdSubmit(id) {
+    // Update local state with new student ID, retrieving new tickets after
+    this.setState(
+      (prevState) => ({
+        student: { ...prevState.student, id: id },
+      }),
+      this.handleProfileRefresh
+    );
+  }
+
+  handleProfileRefresh() {
+    if (this.state.student.id === undefined) {
+      return;
+    }
+
+    // Update modal's state with current attractions, tickets, and student ID
+    this.getStudentTickets().then(() => {
+      this.profileRef.current.setState((prevState) => ({
+        ...prevState,
+        slots: this.state.slots,
+        attractions: this.state.attractions,
+        tickets: this.state.student.tickets,
+        studentId: this.state.student.id,
+      }));
+    });
+  }
+
+  handleTicketRemove(id) {
+    console.log("Removing ticket w/ ID", id);
+    fetch(`${this.apiBaseURL}/tickets/${id}`, { method: "DELETE" })
+      .then((res) => res.json())
+      .then(
+        (res) => {
+          if (res.status !== "success") {
+            console.error("Failed to remove ticket w/ ID", id);
+            console.error("Error:", res.message);
+            return;
+          }
+
+          // Filter out removed ticket
+          const newTickets = [
+            ...this.state.student.tickets.filter((tic) => tic._id !== id),
+          ];
+          this.setState(
+            (prevState) => ({
+              student: { ...prevState.student, tickets: newTickets },
+            }),
+            this.handleProfileRefresh
+          );
+
+          console.log("Removed ticket", res.data);
+        },
+        (err) => {
+          console.error("Failed to remove ticket w/ ID", id);
           console.error(err);
         }
       );
+  }
+
+  render() {
+    const { error, loadedAttractions, loadedSlots } = this.state;
+
+    if (error) {
+      return <div>Error: {error.message}</div>;
+    } else if (!loadedAttractions) {
+      this.getAllAttractions();
+    } else if (loadedAttractions && !loadedSlots) {
+      // Get slots available for attractions based on attraction ID
+      this.getAttractionSlots();
+    }
 
     return (
       <div ref={this.contextRef}>
+        <StudentModal
+          header="Student Profile"
+          ref={this.profileRef}
+          onIdSubmit={this.handleModalIdSubmit}
+          onRefresh={this.handleProfileRefresh}
+          onTicketRemove={this.handleTicketRemove}
+        />
+        <HelpModal ref={this.helpModalRef} />
+        <CardModal
+          ref={this.attractionModalRef}
+          open={this.state.showModal} //Tries to update open within CardModal
+          name={this.name}
+          description={this.description}
+          isActive={this.active}
+          available={this.available}
+          maxAvailable={this.maxAvailable}
+          image={this.img}
+        />
         {/* TODO: Resolve bounce when scrolling */}
         <Sticky context={this.contextRef}>
-          <TitleBar />
+          <TitleBar
+            onHelpClick={this.showHelpModal}
+            onProfileClick={this.showStudentModal}
+          />
         </Sticky>
-        <Card.Group>
-          <Attraction
-            name="Christmas Train"
-            description="Ride on a train choo choo!"
-            isActive={false}
-            available={0}
-            maxAvailable={20}
-            image={christmas}
-          />
-          <Attraction
-            name="Christmas Train"
-            description="Ride on a train choo choo!"
-            isActive={true}
-            available={1}
-            maxAvailable={20}
-            image={christmas}
-          />
-          <Attraction
-            name="Christmas Train"
-            description="Ride on a train choo choo!"
-            isActive={true}
-            available={2}
-            maxAvailable={20}
-            image={christmas}
-          />
-          <Attraction
-            name="Christmas Train"
-            description="Ride on a train choo choo!"
-            isActive={true}
-            available={3}
-            maxAvailable={20}
-            image={christmas}
-          />
-          <Attraction
-            name="Christmas Train"
-            description="Ride on a train choo choo!"
-            isActive={true}
-            available={4}
-            maxAvailable={20}
-            image={christmas}
-          />
-        </Card.Group>
-        <p style={{ fontSize: "24pt" }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Integer
-          enim neque volutpat ac tincidunt vitae semper quis. Commodo quis
-          imperdiet massa tincidunt. Id nibh tortor id aliquet lectus proin nibh
-          nisl condimentum. Lorem mollis aliquam ut porttitor leo a diam.
-          Ultrices mi tempus imperdiet nulla. Pharetra massa massa ultricies mi
-          quis hendrerit. Euismod elementum nisi quis eleifend quam adipiscing.
-          Eget aliquet nibh praesent tristique. Nisi lacus sed viverra tellus in
-          hac habitasse platea dictumst. Nulla facilisi morbi tempus iaculis
-          urna id volutpat lacus laoreet. At erat pellentesque adipiscing
-          commodo elit. Auctor eu augue ut lectus. Vulputate odio ut enim
-          blandit volutpat maecenas volutpat. Gravida rutrum quisque non tellus.
-          Dui accumsan sit amet nulla facilisi morbi tempus iaculis. Sed velit
-          dignissim sodales ut eu. Viverra tellus in hac habitasse platea
-          dictumst vestibulum rhoncus est. Amet consectetur adipiscing elit ut
-          aliquam purus. Enim ut tellus elementum sagittis. Pellentesque
-          pulvinar pellentesque habitant morbi tristique senectus et netus et.
-          Enim sed faucibus turpis in eu mi. Vestibulum lorem sed risus
-          ultricies tristique nulla. Volutpat sed cras ornare arcu dui vivamus.
-          In massa tempor nec feugiat nisl pretium fusce. Odio euismod lacinia
-          at quis risus. Interdum varius sit amet mattis vulputate enim nulla.
-          Sollicitudin nibh sit amet commodo nulla. Scelerisque in dictum non
-          consectetur a. Sapien faucibus et molestie ac. Vestibulum rhoncus est
-          pellentesque elit ullamcorper dignissim cras tincidunt. Lacus luctus
-          accumsan tortor posuere ac. Sagittis purus sit amet volutpat. Urna
-          duis convallis convallis tellus id interdum velit laoreet id. Amet est
-          placerat in egestas erat imperdiet sed euismod nisi. Et odio
-          pellentesque diam volutpat commodo sed egestas egestas fringilla. Et
-          molestie ac feugiat sed. Semper eget duis at tellus at urna. Ut
-          pharetra sit amet aliquam id. A condimentum vitae sapien pellentesque
-          habitant morbi. Pharetra et ultrices neque ornare aenean euismod
-          elementum nisi. Amet est placerat in egestas erat imperdiet.
-          Pellentesque massa placerat duis ultricies lacus sed. Porta nibh
-          venenatis cras sed felis eget velit aliquet sagittis. Gravida arcu ac
-          tortor dignissim convallis aenean et tortor. Purus sit amet volutpat
-          consequat mauris nunc congue. Massa tempor nec feugiat nisl pretium.
-          In massa tempor nec feugiat. Turpis egestas maecenas pharetra
-          convallis posuere morbi. Interdum posuere lorem ipsum dolor sit amet
-          consectetur adipiscing. Est pellentesque elit ullamcorper dignissim
-          cras. Magna fringilla urna porttitor rhoncus dolor. Lorem sed risus
-          ultricies tristique nulla aliquet enim tortor at. Ipsum dolor sit amet
-          consectetur adipiscing. Duis at consectetur lorem donec massa. Nunc
-          vel risus commodo viverra maecenas accumsan lacus vel facilisis. Diam
-          quis enim lobortis scelerisque fermentum dui. Arcu dui vivamus arcu
-          felis bibendum. Adipiscing commodo elit at imperdiet dui accumsan sit
-          amet nulla. Proin libero nunc consequat interdum varius sit amet
-          mattis vulputate. Vulputate eu scelerisque felis imperdiet proin
-          fermentum. Fames ac turpis egestas sed tempus urna et. Tempus
-          imperdiet nulla malesuada pellentesque elit. Dui ut ornare lectus sit.
-          Rutrum quisque non tellus orci ac auctor. Curabitur gravida arcu ac
-          tortor. Aliquet enim tortor at auctor. Faucibus turpis in eu mi
-          bibendum neque egestas congue quisque. Ut lectus arcu bibendum at.
-          Fermentum iaculis eu non diam. Pulvinar neque laoreet suspendisse
-          interdum consectetur libero id faucibus nisl. Aliquam nulla facilisi
-          cras fermentum odio. Morbi leo urna molestie at elementum eu
-          facilisis. Malesuada bibendum arcu vitae elementum curabitur vitae.
-          Elementum nisi quis eleifend quam adipiscing vitae proin. In hendrerit
-          gravida rutrum quisque non tellus orci ac.
-        </p>
+        <Events onAttractionClick={this.showAttractionModal} {...this.state} />
       </div>
     );
   }

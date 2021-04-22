@@ -1,9 +1,13 @@
 import React from "react";
 import { Card, Icon, Image } from "semantic-ui-react";
 
+import CardModal from "./cardModal";
+import Toast from "./toast";
+
 export default class Attraction extends React.Component {
   constructor(props) {
     super(props);
+
     this.name = props.name;
     this.description = props.description;
     this.active = props.isActive;
@@ -14,7 +18,7 @@ export default class Attraction extends React.Component {
 
   render() {
     return (
-      <Card fluid>
+      <Card onClick={this.props.onClick} fluid>
         <Image src={this.img} wrapped disabled={!this.active} />
         <Card.Content>
           <Card.Header>{this.name}</Card.Header>
