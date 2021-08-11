@@ -29,7 +29,7 @@ class App extends React.Component {
     attractions: {},
     slots: {},
   };
-  apiBaseURL = "http://18.222.7.110:3000/api";
+  apiBaseURL = "https://api.cusmartevents.com/api";
 
   constructor(props) {
     super(props);

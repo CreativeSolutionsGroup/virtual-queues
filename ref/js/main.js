@@ -296,7 +296,7 @@ function selectSlot($selected) {
 //
 
 function getAllAttractions(callback) {
-  let url = "http://18.222.7.110:3000/api/events";
+  let url = "https://api.cusmartevents.com/api/events";
   // make the request
   $.get(url, function (results) {
     callback(results);
@@ -304,7 +304,7 @@ function getAllAttractions(callback) {
 }
 
 function getAttractionSlots(id, callback) {
-  let url = `http://18.222.7.110:3000/api/attractions/${id}/slots`;
+  let url = `https://api.cusmartevents.com/api/attractions/${id}/slots`;
   // make the request
   $.get(url, function (results) {
     callback(results);
@@ -312,7 +312,7 @@ function getAttractionSlots(id, callback) {
 }
 
 function getEvent(callback) {
-  let url = "http://18.222.7.110:3000/api/events";
+  let url = "https://api.cusmartevents.com/api/events";
   // make the request
   $.get(url, function (results) {
     callback(results);
@@ -320,7 +320,7 @@ function getEvent(callback) {
 }
 
 function createPass(params, callback) {
-  let url = `http://18.222.7.110:3000/api/slots/${params.slotID}/passes`;
+  let url = `https://api.cusmartevents.com/api/slots/${params.slotID}/passes`;
   // make the request
   // console.log(params.phone);
   // console.log(params.groupSize);

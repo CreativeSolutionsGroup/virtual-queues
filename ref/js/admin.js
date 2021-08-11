@@ -131,7 +131,7 @@ function setEventName() {
 }
 
 function getEvent(callback) {
-  let url = "http://18.222.7.110:3000/api/events";
+  let url = "https://api.cusmartevents.com/api/events";
   // make the request
   $.get(url, function (results) {
     callback(results);
@@ -139,7 +139,7 @@ function getEvent(callback) {
 }
 
 function getAllAttractions(callback) {
-  let url = "http://18.222.7.110:3000/api/attractions";
+  let url = "https://api.cusmartevents.com/api/attractions";
   // make the request
   $.get(url, function (results) {
     callback(results);
@@ -147,7 +147,7 @@ function getAllAttractions(callback) {
 }
 
 function addAttraction(params, callback) {
-  let url = "http://18.222.7.110:3000/api/attractions";
+  let url = "https://api.cusmartevents.com/api/attractions";
   // make the request
   $.post(url, params, function (results) {
     callback(results);
@@ -155,7 +155,7 @@ function addAttraction(params, callback) {
 }
 
 function updateEventName(name, callback) {
-  let url = "http://18.222.7.110:3000/api/events";
+  let url = "https://api.cusmartevents.com/api/events";
   // make the request
   $.post(url, { name: name }, function (results) {
     callback(results);
@@ -163,7 +163,7 @@ function updateEventName(name, callback) {
 }
 
 function broadcastMessage(message, password, callback) {
-  let url = "http://18.222.7.110:3000/api/tracker/broadcast";
+  let url = "https://api.cusmartevents.com/api/tracker/broadcast";
   // make the request
   $.post(url, { message: message, password: password }, function (results) {
     callback(results);

@@ -60,7 +60,7 @@ $(document).ready(function () {
 });
 
 function getAllAttractions(callback) {
-  let url = "http://18.222.7.110:3000/api/attractions";
+  let url = "https://api.cusmartevents.com/api/attractions";
   // make the request
   $.get(url, function (results) {
     callback(results);
@@ -68,7 +68,7 @@ function getAllAttractions(callback) {
 }
 
 function getAttractionSlots(id, callback) {
-  let url = `http://18.222.7.110:3000/api/attractions/${id}/slots`;
+  let url = `https://api.cusmartevents.com/api/attractions/${id}/slots`;
   // make the request
   $.get(url, function (results) {
     callback(results);
@@ -76,7 +76,7 @@ function getAttractionSlots(id, callback) {
 }
 
 function getTotalCheckin(callback) {
-  let url = "http://18.222.7.110:3000/api/tracker";
+  let url = "https://api.cusmartevents.com/api/tracker";
   // make the request
   $.get(url, function (results) {
     callback(results);
@@ -84,7 +84,7 @@ function getTotalCheckin(callback) {
 }
 
 function getCheckinID(callback) {
-  let url = "http://18.222.7.110:3000/api/tracker/attendees";
+  let url = "https://api.cusmartevents.com/api/tracker/attendees";
   // make the request
   $.get(url, function (results) {
     callback(results);
