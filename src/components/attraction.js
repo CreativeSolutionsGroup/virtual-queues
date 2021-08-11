@@ -33,7 +33,7 @@ export default class Attraction extends React.Component {
 
   getTicketsAvailable() {
     this.state.slots.forEach(({ _id }, idx) => {
-      fetch(`http://18.222.7.110:3000/api/slots/${_id}/tickets/`)
+      fetch(`https://api.cusmartevents.com/api/slots/${_id}/tickets/`)
         .then((res) => res.json())
         .then(
           (res) => {

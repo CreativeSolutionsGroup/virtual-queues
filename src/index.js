@@ -271,7 +271,7 @@ class App extends React.Component {
       body: JSON.stringify(ticketReq),
     };
 
-    fetch("http://18.222.7.110:3000/api/tickets/", postOptions)
+    fetch("https://api.cusmartevents.com/api/tickets/", postOptions)
       .then((res) => res.json())
       .then(
         (res) => {
