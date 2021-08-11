@@ -290,7 +290,8 @@ class App extends React.Component {
               header: "Success!",
             });
           }
-
+          
+          this.attractionModalRef.current.setState({ open: false })
           this.toastRef.current.handleOpen();
         },
         (err) => console.error(err)
