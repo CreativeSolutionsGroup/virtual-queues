@@ -56,7 +56,7 @@ const Events = (props) => {
         const now = Date.now();
         const start = new Date(Date.parse(val.start_time));
         const end = new Date(Date.parse(val.end_time));
-        const isActive = attractions.length > 0 && now >= start && end >= now;
+        const isActive = now >= start && end >= now;
 
         return (
           <Grid.Column key={key}>

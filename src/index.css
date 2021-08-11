@@ -1,6 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800&display=swap");
+
 h2.ui.header {
   margin-top: 0;
   color: white;
+  font-family: Montserrat, Lato, Arial, Helvetica, sans-serif;
 }
 
 .ui.header .sub.header {
@@ -13,8 +16,8 @@ h2.ui.header {
   white-space: nowrap !important;
 }
 
-.ui.card {
-  display: inline-block;
+.ui.fluid.card {
+  cursor: pointer !important;
 }
 
 .ui.grid {

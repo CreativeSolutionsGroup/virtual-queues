@@ -5,9 +5,10 @@ import { Sticky } from "semantic-ui-react";
 
 import TitleBar from "./components/titlebar";
 import Events from "./components/events";
-import StudentModal from "./components/studentModal";
-import HelpModal from "./components/helpModal";
-import CardModal from "./components/cardModal";
+import StudentModal from "./components/modals/studentProfile";
+import HelpModal from "./components/modals/help";
+import AttractionModal from "./components/modals/attraction";
+import Toast from "./components/toast";
 
 import "./index.css";
 import "semantic-ui-css/semantic.min.css";
@@ -17,6 +18,7 @@ class App extends React.Component {
   profileRef = createRef();
   helpModalRef = createRef();
   attractionModalRef = createRef();
+  toastRef = createRef();
 
   state = {
     error: null,
@@ -37,7 +39,8 @@ class App extends React.Component {
     // Modals
     this.showStudentModal = this.showStudentModal.bind(this);
     this.showHelpModal = this.showHelpModal.bind(this);
-    this.showAttractionModal = this.showAttractionModal.bind(this);
+    this.showHelpModal = this.showHelpModal.bind(this);
+    this.handleAttractionClick = this.handleAttractionClick.bind(this);
 
     // General data retrieval
     this.getAttractionSlots = this.getAttractionSlots.bind(this);
@@ -47,18 +50,17 @@ class App extends React.Component {
     this.handleModalIdSubmit = this.handleModalIdSubmit.bind(this);
     this.handleProfileRefresh = this.handleProfileRefresh.bind(this);
     this.handleTicketRemove = this.handleTicketRemove.bind(this);
+
+    // Handlers related to attractions
+    this.handleTicketReserve = this.handleTicketReserve.bind(this);
+    this.isStudentSignedIn = this.isStudentSignedIn.bind(this);
   }
 
-  showAttractionModal() {
-    this.attractionModalRef.current.setState({ open: true });
+  isStudentSignedIn() {
+    return this.state.student.id !== undefined;
   }
 
   showHelpModal() {
-    if (this.helpModalRef.current === null) {
-      console.log("Failing to show modal");
-      return;
-    }
-
     this.helpModalRef.current.setState({ open: true });
   }
 
@@ -238,6 +240,63 @@ class App extends React.Component {
       );
   }
 
+  handleAttractionClick(id) {
+    const attraction = this.state.attractions[id];
+    const now = Date.now();
+    const start = new Date(Date.parse(attraction.start_time));
+    const end = new Date(Date.parse(attraction.end_time));
+    const isActive = now >= start && end >= now;
+
+    this.attractionModalRef.current.setState({
+      name: attraction.name,
+      description: attraction.description,
+      img: attraction.image_url,
+      isActive: isActive,
+      startTime: attraction.start_time,
+      endTime: attraction.end_time,
+      slots: this.state.slots[id] || [],
+      open: true,
+    });
+  }
+
+  handleTicketReserve(slotId) {
+    const ticketReq = {
+      student_id: this.state.student.id,
+      slot_id: slotId,
+    };
+
+    const postOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(ticketReq),
+    };
+
+    fetch("http://18.222.7.110:3000/api/tickets/", postOptions)
+      .then((res) => res.json())
+      .then(
+        (res) => {
+          console.log("Request Result:", res);
+          if (res.status !== "success") {
+            // TODO: Make this user-friendly (likely need to log in)
+            this.toastRef.current.setState({
+              success: false,
+              message: res.message._message,
+              header: "Error",
+            });
+          } else {
+            this.toastRef.current.setState({
+              success: true,
+              message: `Successfully retrieved ticket with ID ${res.data._id}!`,
+              header: "Success!",
+            });
+          }
+
+          this.toastRef.current.handleOpen();
+        },
+        (err) => console.error(err)
+      );
+  }
+
   render() {
     const { error, loadedAttractions, loadedSlots } = this.state;
 
@@ -260,7 +319,7 @@ class App extends React.Component {
           onTicketRemove={this.handleTicketRemove}
         />
         <HelpModal ref={this.helpModalRef} />
-        <CardModal
+        <AttractionModal
           ref={this.attractionModalRef}
           open={this.state.showModal} //Tries to update open within CardModal
           name={this.name}
@@ -269,6 +328,8 @@ class App extends React.Component {
           available={this.available}
           maxAvailable={this.maxAvailable}
           image={this.img}
+          onReserve={this.handleTicketReserve}
+          isStudentSignedIn={this.isStudentSignedIn}
         />
         {/* TODO: Resolve bounce when scrolling */}
         <Sticky context={this.contextRef}>
@@ -277,7 +338,14 @@ class App extends React.Component {
             onProfileClick={this.showStudentModal}
           />
         </Sticky>
-        <Events onAttractionClick={this.showAttractionModal} {...this.state} />
+        <Events
+          onAttractionClick={this.handleAttractionClick}
+          {...this.state}
+        />
+        {/*
+          TODO: Convert this to a Portal to allow the toast to actually hover
+        */}
+        <Toast ref={this.toastRef} open={false} />
       </div>
     );
   }

@@ -46,10 +46,16 @@ class StudentIdInput extends React.Component {
       this.props.studentId === "000000" ? "" : this.props.studentId;
     return (
       <Input
+        autoFocus
         defaultValue={defaultVal}
         placeholder="0000000"
-        onChange={(_, val) => {
-          this.setState({ error: !this.validateId(val.value) });
+        onChange={(_, val) =>
+          this.setState({ error: !this.validateId(val.value) })
+        }
+        onKeyPress={(e) => {
+          if (e.key === "Enter") {
+            this.handleSubmit();
+          }
         }}
         error={this.state.error}
         ref={this.inputRef}
