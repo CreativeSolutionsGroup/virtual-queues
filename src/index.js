@@ -30,6 +30,7 @@ class App extends React.Component {
     },
     attractions: {},
     slots: {},
+    slotTicketCount: {}
   };
   apiBaseURL = "https://api.cusmartevents.com/api";
 
@@ -54,6 +55,7 @@ class App extends React.Component {
     // Handlers related to attractions
     this.handleTicketReserve = this.handleTicketReserve.bind(this);
     this.isStudentSignedIn = this.isStudentSignedIn.bind(this);
+    this.studentHasTicket = this.studentHasTicket.bind(this);
   }
 
   componentDidMount() {
@@ -61,11 +63,25 @@ class App extends React.Component {
       let student = this.state.student;
       student.id = window.localStorage.getItem("StudentID");
       this.setState({student: student})
+      this.handleProfileRefresh();
     }
   }
 
   isStudentSignedIn() {
     return this.state.student.id !== undefined;
+  }
+
+  studentHasTicket(studentTickets, slotId){
+    if(this.state.student.id !== undefined){
+      let hasTicket = false;
+      studentTickets.forEach((ticket) => {
+        if(ticket.slot_id === slotId){
+          hasTicket = true;
+        }
+      });
+      return hasTicket;
+    }
+    return false;
   }
 
   showHelpModal() {
@@ -134,11 +150,12 @@ class App extends React.Component {
           );
           console.debug("Slots:", slots);
 
+          this.getSlotTickets();
           // Update with retrieved slots
           this.setState({
             loadedSlots: true,
             error: "",
-            slots: slots,
+            slots: slots
           });
         },
         (err) => {
@@ -147,6 +164,33 @@ class App extends React.Component {
           this.setState({ loadedSlots: true, err: "Failed to load slots" });
         }
       );
+  }
+
+  getSlotTickets(){
+    fetch(this.apiBaseURL + "/tickets/")
+      .then((res) => res.json())
+      .then(
+        (res) => {
+          if (res.status !== "success") {
+            console.error("Failed to retrieve slot tickets");
+            console.error("Error:", res.message);
+            return;
+          }
+
+          let slotTicketCount = {}          
+          res.data.forEach((ticket) => {
+              let oldCount = slotTicketCount[ticket.slot_id] === undefined ? 0 : slotTicketCount[ticket.slot_id];
+              slotTicketCount[ticket.slot_id] = oldCount + 1;
+          })
+          this.setState({slotTicketCount, slotTicketCount})
+        },
+        (err) => {
+          console.error("Failed to retrieve slot tickets");
+          console.error(err);
+          this.setState({ loadedSlots: true, err: "Failed to load slot tickets" });
+        }
+      );
+    
   }
 
   getAllAttractions() {
@@ -248,6 +292,8 @@ class App extends React.Component {
           console.error(err);
         }
       );
+      //Refresh slot counts
+      this.getSlotTickets();
   }
 
   handleAttractionClick(id) {
@@ -341,6 +387,9 @@ class App extends React.Component {
           image={this.img}
           onReserve={this.handleTicketReserve}
           isStudentSignedIn={this.isStudentSignedIn}
+          hasTicket={this.studentHasTicket}
+          studentTickets={this.state.student.tickets}
+          slotTicketsTaken={this.state.slotTicketCount}
         />
         {/* TODO: Resolve bounce when scrolling */}
         <Sticky context={this.contextRef}>

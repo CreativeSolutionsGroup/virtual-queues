@@ -106,7 +106,7 @@ class StudentModal extends React.Component {
                     break;
                   }
 
-                  if(ticketSlot === undefined){
+                  if(ticketSlot === undefined || ticketSlot === null){
                     return "";
                   }
 
