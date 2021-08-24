@@ -99,9 +99,15 @@ class StudentModal extends React.Component {
                     }
 
                     // Retrieved slot name, break out of loop now
-                    slotName = this.state.attractions[ticketSlot.attraction_id]
-                      .name;
+                    if(this.state.attractions[ticketSlot.attraction_id] !== undefined){
+                      slotName = this.state.attractions[ticketSlot.attraction_id]
+                        .name;
+                    }
                     break;
+                  }
+
+                  if(ticketSlot === undefined){
+                    return "";
                   }
 
                   // TODO: Just return null if it's not a valid reservation

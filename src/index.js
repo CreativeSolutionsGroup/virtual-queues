@@ -56,6 +56,14 @@ class App extends React.Component {
     this.isStudentSignedIn = this.isStudentSignedIn.bind(this);
   }
 
+  componentDidMount() {
+    if(window.localStorage.getItem("StudentID")){
+      let student = this.state.student;
+      student.id = window.localStorage.getItem("StudentID");
+      this.setState({student: student})
+    }
+  }
+
   isStudentSignedIn() {
     return this.state.student.id !== undefined;
   }
@@ -183,6 +191,8 @@ class App extends React.Component {
    */
   handleModalIdSubmit(id) {
     // Update local state with new student ID, retrieving new tickets after
+    window.localStorage.setItem('StudentID', id);
+    
     this.setState(
       (prevState) => ({
         student: { ...prevState.student, id: id },
