@@ -1,6 +1,8 @@
 import { Card, Segment, Icon, Button, Popup } from "semantic-ui-react";
 
+
 const AttractionsSegment = (props) => {
+  
   return (
     <Segment>
       <Card.Group>
@@ -12,10 +14,13 @@ const AttractionsSegment = (props) => {
             return null;
           }
 
+          const hasTicket = props.hasTicket(props.studentTickets, slot._id);
+
           const hoverMsg = props.disabled
             ? "Please sign in with your student ID first!"
-            : "Reserve a new ticket";
+            : hasTicket ? "Ticket already reserved" : "Reserve a new ticket";
 
+          const takenCount = props.slotTicketsTaken !== undefined ? (props.slotTicketsTaken[slot._id] !== undefined ? props.slotTicketsTaken[slot._id] : 0) : 0;
           return (
             <Card key={slot._id}>
               <Card.Content>
@@ -24,28 +29,26 @@ const AttractionsSegment = (props) => {
                   {hideTime.toLocaleString("en-US")}
                 </Card.Header>
                 <div>
-                  <Icon name="user" />
-                  {slot.ticket_capacity - slot.taken}/{slot.ticket_capacity}{" "}
-                  slots available!
+                  <Icon name="ticket" />
+                  {slot.ticket_capacity - takenCount}/{slot.ticket_capacity}{" "}
+                  tickets available!
                 </div>
-              </Card.Content>
+              </Card.Content> 
               <Card.Content extra>
-                {/* Make this conditional based on whether we have a ticket or not */}
                 <Popup
-                  trigger={
-                    <div>
-                      <Button
-                        disabled={props.disabled}
-                        content="Reserve a ticket"
-                        labelPosition="right"
-                        icon="ticket"
-                        onClick={() => props.onReserve(slot._id)}
-                        positive
-                      />
-                    </div>
-                  }
-                  content={hoverMsg}
-                />
+                      trigger={
+                        <div>
+                          <Button
+                            disabled={props.disabled || hasTicket}
+                            content="Reserve a ticket"
+                            labelPosition="right"
+                            icon="ticket"
+                            onClick={() => props.onReserve(slot._id)}
+                            positive
+                          />
+                        </div>
+                      }
+                      content={hoverMsg} />
               </Card.Content>
             </Card>
           );

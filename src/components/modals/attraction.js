@@ -22,7 +22,6 @@ class AttractionModal extends React.Component {
       (acc, slot) => [acc[0] + slot.ticket_capacity, acc[1] + slot.taken],
       [0, 0]
     );
-
     return (
       <Modal
         closeIcon
@@ -35,13 +34,15 @@ class AttractionModal extends React.Component {
           <Image size="medium" src={this.state.img} wrapped />
           <Modal.Description>
             <Header>{this.state.name}</Header>
-            <p>{this.state.description}</p>
-            {/* TODO: Check if the student already has a ticket */}
+            <p style={{ whiteSpace: 'pre-line'}}>{this.state.description}</p>
             {this.state.slots.length > 0 ? (
               <AttractionsSegment
                 disabled={!this.props.isStudentSignedIn()}
                 onReserve={this.props.onReserve}
                 slots={this.state.slots}
+                studentTickets={this.props.studentTickets}
+                hasTicket={this.props.hasTicket}
+                slotTicketsTaken={this.props.slotTicketsTaken}
               />
             ) : null}
             {/* <Header>

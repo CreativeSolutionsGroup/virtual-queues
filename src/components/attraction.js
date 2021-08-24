@@ -82,7 +82,7 @@ export default class Attraction extends React.Component {
         </Card.Content>
         <Card.Content extra>
           <div>
-            <Icon name="user" />
+            <Icon name="ticket" />
             {maxCapacity - takenSlots}/{maxCapacity} available in {numSlots}{" "}
             slots
           </div>
