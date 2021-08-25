@@ -77,7 +77,7 @@ class StudentModal extends React.Component {
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>Event</Table.HeaderCell>
-                  <Table.HeaderCell>Ticket ID</Table.HeaderCell>
+                  <Table.HeaderCell>Ticket</Table.HeaderCell>
                   <Table.HeaderCell />
                 </Table.Row>
               </Table.Header>
@@ -118,9 +118,27 @@ class StudentModal extends React.Component {
 
                   return (
                     <Table.Row key={val._id}>
-                      <Table.Cell disabled={hideTime <= now}>{slotName}</Table.Cell>
+                      <Table.Cell disabled={hideTime <= now} collapsing>
+                        <div style={{display: 'flex', flexDirection: 'column'}}>
+                          <div style={{marginLeft: 'auto', marginRight: 'auto', marginBottom: 5, marginTop: 5}} >
+                            <h3>{
+                              slotName
+                            }</h3>
+                          </div>
+                          <div style={{marginLeft: 'auto', marginRight: 'auto', marginBottom: 5, marginTop: 5}} >
+                            <h3>{
+                              hideTime.toLocaleString("en-US")
+                            }</h3>
+                          </div>
+                        </div>
+                      </Table.Cell>
                       <Table.Cell disabled={hideTime <= now} style={{display: 'flex'}}>
-                        <div style={{marginLeft: 'auto', marginRight: 'auto'}} ><QRCode value={val._id} /></div>
+                        <div style={{display: 'flex', flexDirection: 'column', marginLeft: 'auto', marginRight: 'auto'}} >
+                          
+                          <div style={{marginLeft: 'auto', marginRight: 'auto'}} >
+                            <QRCode value={val._id} />
+                          </div>
+                        </div>
                       </Table.Cell>
                       <Table.Cell collapsing>
                         <Button
