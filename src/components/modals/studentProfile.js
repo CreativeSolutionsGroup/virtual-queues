@@ -116,9 +116,9 @@ class StudentModal extends React.Component {
                   const hideTime = new Date(Date.parse(ticketSlot.hide_time));
 
                   return (
-                    <Table.Row disabled={hideTime <= now} key={val._id}>
-                      <Table.Cell>{slotName}</Table.Cell>
-                      <Table.Cell>{val._id}</Table.Cell>
+                    <Table.Row key={val._id}>
+                      <Table.Cell disabled={hideTime <= now}>{slotName}</Table.Cell>
+                      <Table.Cell disabled={hideTime <= now}>{val._id}</Table.Cell>
                       <Table.Cell collapsing>
                         <Button
                           icon="delete"
