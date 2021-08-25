@@ -1,5 +1,6 @@
 import React, { createRef } from "react";
 import { Header, Modal, Table, Button, Segment, Icon } from "semantic-ui-react";
+import QRCode from "react-qr-code";
 
 import StudentIdInput from "./studentIdInput";
 
@@ -118,7 +119,9 @@ class StudentModal extends React.Component {
                   return (
                     <Table.Row key={val._id}>
                       <Table.Cell disabled={hideTime <= now}>{slotName}</Table.Cell>
-                      <Table.Cell disabled={hideTime <= now}>{val._id}</Table.Cell>
+                      <Table.Cell disabled={hideTime <= now} style={{display: 'flex'}}>
+                        <div style={{marginLeft: 'auto', marginRight: 'auto'}} ><QRCode value={val._id} /></div>
+                      </Table.Cell>
                       <Table.Cell collapsing>
                         <Button
                           icon="delete"
