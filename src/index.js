@@ -1,7 +1,7 @@
 import React, { createRef } from "react";
 import ReactDOM from "react-dom";
 
-import { Sticky, Button, Icon } from "semantic-ui-react";
+import { Sticky } from "semantic-ui-react";
 
 import TitleBar from "./components/titlebar";
 import Events from "./components/events";
@@ -13,6 +13,7 @@ import Toast from "./components/toast";
 import "./index.css";
 import "semantic-ui-css/semantic.min.css";
 import TicketFolderModal from "./components/modals/ticketFolder";
+import TicketWalletButton from "./components/ticketWalletButton";
 
 class App extends React.Component {
   contextRef = createRef();
@@ -59,6 +60,9 @@ class App extends React.Component {
     this.handleTicketReserve = this.handleTicketReserve.bind(this);
     this.isStudentSignedIn = this.isStudentSignedIn.bind(this);
     this.studentHasTicket = this.studentHasTicket.bind(this);
+
+    //Getters
+    this.getUnscannedStudentTicketCount = this.getUnscannedStudentTicketCount.bind(this);
   }
 
   componentDidMount() {
@@ -68,15 +72,6 @@ class App extends React.Component {
       this.setState({student: student})
       this.handleProfileRefresh();
     }
-    window.addEventListener("resize", this.handleResize);
-  }
-
-  handleResize = (e) => {
-      this.setState({ windowWidth: window.innerWidth, windowHeight: window.innerHeight });
-  };
-
-  componentWillUnmount() {
-      window.addEventListener("resize", this.handleResize);
   }
 
   isStudentSignedIn() {
@@ -131,15 +126,18 @@ class App extends React.Component {
           );
           let newStudent = this.state.student;
           newStudent.tickets = userTickets;
-          console.log(userTickets)
           this.setState({student: newStudent})
-          // Update state
-          /*this.setState((prevState) => ({
-            student: { ...prevState.student, tickets: userTickets },
-          }));*/
         },
         (err) => console.error(err)
       );
+  }
+
+  getUnscannedStudentTicketCount(){
+    if(this.state.student.id !== undefined){
+      let notScannedTickets = this.state.student.tickets.filter((ticket) => ticket.scanned === false)
+      return notScannedTickets.length;
+    }
+    return 0;
   }
 
   getAttractionSlots() {
@@ -192,12 +190,12 @@ class App extends React.Component {
             return;
           }
 
-          let slotTicketCount = {}          
+          let newSlotTicketCount = {}          
           res.data.forEach((ticket) => {
-              let oldCount = slotTicketCount[ticket.slot_id] === undefined ? 0 : slotTicketCount[ticket.slot_id];
-              slotTicketCount[ticket.slot_id] = oldCount + 1;
+              let oldCount = newSlotTicketCount[ticket.slot_id] === undefined ? 0 : newSlotTicketCount[ticket.slot_id];
+              newSlotTicketCount[ticket.slot_id] = oldCount + 1;
           })
-          this.setState({slotTicketCount, slotTicketCount})
+          this.setState({slotTicketCount: newSlotTicketCount})
         },
         (err) => {
           console.error("Failed to retrieve slot tickets");
@@ -374,9 +372,9 @@ class App extends React.Component {
       );
   }
 
-  showTicketModal() {
+  showTicketModal() { 
     const { slots } = this.state;
-    let notScannedTickets = this.state.student.tickets.filter((ticket) => ticket.scanned == false)
+    let notScannedTickets = this.state.student.tickets.filter((ticket) => ticket.scanned === false)
     //TODO Sort by time
     this.ticketFolderRef.current.setState({ 
       open: true, 
@@ -397,12 +395,6 @@ class App extends React.Component {
       // Get slots available for attractions based on attraction ID
       this.getAttractionSlots();
     }
-
-    const { windowWidth, windowHeight } = this.state;
-
-    let windowSquare = windowHeight < windowWidth ? windowHeight : windowWidth;
-
-    const ticketButtonSize = windowSquare * 0.25;
 
     return (
       <div>
@@ -449,23 +441,10 @@ class App extends React.Component {
         </div>
         
 
-        <Button 
-            circular icon
-            style={{
-              right: 30,
-              position: 'fixed',
-              bottom: 30,
-              zIndex: 1000,
-              backgroundColor: '#F3A00F' //Cedarville Yellow
-            }}
-            size='massive'
-            onClick={()=> this.showTicketModal()}
-          >
-            <div style={{display: 'flex'}}>
-              {/*Center Icon*/}
-              <Icon name='ticket' style={{margin: 2, marginTop: 4, marginBottom: 4}}/> 
-            </div>
-        </Button>
+        <TicketWalletButton 
+          getTicketCount={this.getUnscannedStudentTicketCount}
+          showTicketModal={this.showTicketModal}
+        />
         <TicketFolderModal ref={this.ticketFolderRef} open={false} />
     </div>
     );
