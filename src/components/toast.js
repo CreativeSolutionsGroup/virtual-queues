@@ -5,8 +5,6 @@ export default class Toast extends React.Component {
   constructor(props) {
     super(props);
 
-    console.log(props);
-
     this.state = {
       open: props.open,
       success: props.success,

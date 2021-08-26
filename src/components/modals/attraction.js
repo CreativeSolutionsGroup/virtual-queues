@@ -18,10 +18,6 @@ class AttractionModal extends React.Component {
   }
 
   render() {
-    const [maxCapacity, takenSlots] = this.state.slots.reduce(
-      (acc, slot) => [acc[0] + slot.ticket_capacity, acc[1] + slot.taken],
-      [0, 0]
-    );
     return (
       <Modal
         closeIcon
@@ -45,11 +41,6 @@ class AttractionModal extends React.Component {
                 slotTicketsTaken={this.props.slotTicketsTaken}
               />
             ) : null}
-            {/* <Header>
-              {`There are ${
-                maxCapacity - takenSlots
-              }/${maxCapacity} tickets available.`}
-            </Header> */}
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
