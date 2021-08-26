@@ -34,7 +34,7 @@ export default class TitleBar extends React.Component {
             </Button.Content>
           </Button>
         </div>
-        <Header as="h2" content="CU Events" subheader="Virtual Queues" />
+        <Header as="h2" content="CU Events" subheader="Virtual Queues" className="user notranslate skiptranslate" />
       </header>
     );
   }
