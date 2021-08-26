@@ -1,7 +1,7 @@
 import React, { createRef } from "react";
 import ReactDOM from "react-dom";
 
-import { Sticky } from "semantic-ui-react";
+import { Sticky, Button, Icon } from "semantic-ui-react";
 
 import TitleBar from "./components/titlebar";
 import Events from "./components/events";
@@ -12,6 +12,7 @@ import Toast from "./components/toast";
 
 import "./index.css";
 import "semantic-ui-css/semantic.min.css";
+import TicketFolderModal from "./components/modals/ticketFolder";
 
 class App extends React.Component {
   contextRef = createRef();
@@ -19,6 +20,7 @@ class App extends React.Component {
   helpModalRef = createRef();
   attractionModalRef = createRef();
   toastRef = createRef();
+  ticketFolderRef = createRef();
 
   state = {
     error: null,
@@ -42,6 +44,7 @@ class App extends React.Component {
     this.showHelpModal = this.showHelpModal.bind(this);
     this.showHelpModal = this.showHelpModal.bind(this);
     this.handleAttractionClick = this.handleAttractionClick.bind(this);
+    this.showTicketModal = this.showTicketModal.bind(this);
 
     // General data retrieval
     this.getAttractionSlots = this.getAttractionSlots.bind(this);
@@ -65,6 +68,15 @@ class App extends React.Component {
       this.setState({student: student})
       this.handleProfileRefresh();
     }
+    window.addEventListener("resize", this.handleResize);
+  }
+
+  handleResize = (e) => {
+      this.setState({ windowWidth: window.innerWidth, windowHeight: window.innerHeight });
+  };
+
+  componentWillUnmount() {
+      window.addEventListener("resize", this.handleResize);
   }
 
   isStudentSignedIn() {
@@ -117,11 +129,14 @@ class App extends React.Component {
           const userTickets = res.data.filter(
             (val) => val.student_id.toString() === this.state.student.id
           );
-
+          let newStudent = this.state.student;
+          newStudent.tickets = userTickets;
+          console.log(userTickets)
+          this.setState({student: newStudent})
           // Update state
-          this.setState((prevState) => ({
+          /*this.setState((prevState) => ({
             student: { ...prevState.student, tickets: userTickets },
-          }));
+          }));*/
         },
         (err) => console.error(err)
       );
@@ -316,6 +331,8 @@ class App extends React.Component {
   }
 
   handleTicketReserve(slotId) {
+    console.log("Reserving Ticket: " + slotId)
+
     const ticketReq = {
       student_id: this.state.student.id,
       slot_id: slotId,
@@ -354,6 +371,18 @@ class App extends React.Component {
       );
   }
 
+  showTicketModal() {
+    const { slots } = this.state;
+    let notScannedTickets = this.state.student.tickets.filter((ticket) => ticket.scanned == false)
+    //TODO Sort by time
+    this.ticketFolderRef.current.setState({ 
+      open: true, 
+      tickets: notScannedTickets, 
+      slots: slots,
+      attractions: this.state.attractions
+    });
+  }
+
   render() {
     const { error, loadedAttractions, loadedSlots } = this.state;
 
@@ -366,47 +395,76 @@ class App extends React.Component {
       this.getAttractionSlots();
     }
 
+    const { windowWidth, windowHeight } = this.state;
+
+    let windowSquare = windowHeight < windowWidth ? windowHeight : windowWidth;
+
+    const ticketButtonSize = windowSquare * 0.25;
+
     return (
-      <div ref={this.contextRef}>
-        <StudentModal
-          header="Student Profile"
-          ref={this.profileRef}
-          onIdSubmit={this.handleModalIdSubmit}
-          onRefresh={this.handleProfileRefresh}
-          onTicketRemove={this.handleTicketRemove}
-        />
-        <HelpModal ref={this.helpModalRef} />
-        <AttractionModal
-          ref={this.attractionModalRef}
-          open={this.state.showModal} //Tries to update open within CardModal
-          name={this.name}
-          description={this.description}
-          isActive={this.active}
-          available={this.available}
-          maxAvailable={this.maxAvailable}
-          image={this.img}
-          onReserve={this.handleTicketReserve}
-          isStudentSignedIn={this.isStudentSignedIn}
-          hasTicket={this.studentHasTicket}
-          studentTickets={this.state.student.tickets}
-          slotTicketsTaken={this.state.slotTicketCount}
-        />
-        {/* TODO: Resolve bounce when scrolling */}
-        <Sticky context={this.contextRef}>
-          <TitleBar
-            onHelpClick={this.showHelpModal}
-            onProfileClick={this.showStudentModal}
+      <div>
+        <div ref={this.contextRef}>
+          <StudentModal
+            header="Student Profile"
+            ref={this.profileRef}
+            onIdSubmit={this.handleModalIdSubmit}
+            onRefresh={this.handleProfileRefresh}
+            onTicketRemove={this.handleTicketRemove}
           />
-        </Sticky>
-        <Events
-          onAttractionClick={this.handleAttractionClick}
-          {...this.state}
-        />
-        {/*
-          TODO: Convert this to a Portal to allow the toast to actually hover
-        */}
-        <Toast ref={this.toastRef} open={false} />
-      </div>
+          <HelpModal ref={this.helpModalRef} />
+          <AttractionModal
+            ref={this.attractionModalRef}
+            open={this.state.showModal} //Tries to update open within CardModal
+            name={this.name}
+            description={this.description}
+            isActive={this.active}
+            available={this.available}
+            maxAvailable={this.maxAvailable}
+            image={this.img}
+            onReserve={this.handleTicketReserve}
+            isStudentSignedIn={this.isStudentSignedIn}
+            hasTicket={this.studentHasTicket}
+            studentTickets={this.state.student.tickets}
+            slotTicketsTaken={this.state.slotTicketCount}
+          />
+
+          {/* TODO: Resolve bounce when scrolling */}
+          <Sticky context={this.contextRef}>
+            <TitleBar
+              onHelpClick={this.showHelpModal}
+              onProfileClick={this.showStudentModal}
+            />
+          </Sticky>
+          <Events
+            onAttractionClick={this.handleAttractionClick}
+            {...this.state}
+          />
+          {/*
+            TODO: Convert this to a Portal to allow the toast to actually hover
+          */}
+          <Toast ref={this.toastRef} open={false} />
+        </div>
+        
+
+        <Button 
+            circular icon
+            style={{
+              right: 30,
+              position: 'fixed',
+              bottom: 30,
+              zIndex: 1000,
+              backgroundColor: '#F3A00F' //Cedarville Yellow
+            }}
+            size='massive'
+            onClick={()=> this.showTicketModal()}
+          >
+            <div style={{display: 'flex'}}>
+              {/*Center Icon*/}
+              <Icon name='ticket' style={{margin: 2, marginTop: 4, marginBottom: 4}}/> 
+            </div>
+        </Button>
+        <TicketFolderModal ref={this.ticketFolderRef} open={false} />
+    </div>
     );
   }
 }
