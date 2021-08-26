@@ -134,9 +134,8 @@ class StudentModal extends React.Component {
                       </Table.Cell>
                       <Table.Cell disabled={hideTime <= now} style={{display: 'flex'}}>
                         <div style={{display: 'flex', flexDirection: 'column', marginLeft: 'auto', marginRight: 'auto'}} >
-                          
                           <div style={{marginLeft: 'auto', marginRight: 'auto'}} >
-                            <QRCode value={val._id} />
+                            {val.scanned ? "Ticket Scanned" : <QRCode value={val._id} />}
                           </div>
                         </div>
                       </Table.Cell>
