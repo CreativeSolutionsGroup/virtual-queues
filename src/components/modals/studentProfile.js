@@ -23,6 +23,7 @@ class StudentModal extends React.Component {
       tickets: props.tickets === undefined ? [] : props.tickets,
       open: props.open === undefined ? false : props.open,
       studentId: props.studentId === undefined ? "000000" : props.studentId,
+      successfulIdChange: false
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -37,11 +38,15 @@ class StudentModal extends React.Component {
     const newId = this.idRef.current.getId();
     if (this.state.studentId === newId) {
       // No changes were made, do nothing
+      this.setState({successfulIdChange: false});
       return;
     }
 
     // The ID changed, update state and retrieved tickets
     this.handleIdSubmit(newId);
+    this.setState({successfulIdChange: true});
+
+    setTimeout(() => {this.setState({successfulIdChange: false}); }, 3000);
   }
 
   render() {
@@ -61,11 +66,15 @@ class StudentModal extends React.Component {
         </Modal.Header>
         <Modal.Content>
           <Header>Student ID</Header>
+          <div style={{display: 'flex'}}>
           <StudentIdInput
             onSubmit={this.handleSubmit}
             studentId={this.state.studentId}
             ref={this.idRef}
+            onChange={()=> this.setState({successfulIdChange: false})}
           />
+          {this.state.successfulIdChange ? <div style={{color: 'green', marginLeft: 5, marginTop: 'auto', marginBottom: 'auto'}}>ID updated</div> : ""}
+          </div>
           <Segment clearing>
             <Header floated="left">Tickets Available</Header>
             <Header floated="right">
