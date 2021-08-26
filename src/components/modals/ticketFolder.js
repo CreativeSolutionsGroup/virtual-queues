@@ -34,17 +34,13 @@ class TicketFolderModal extends React.Component {
   render() {
     return (
       <Modal
-
+            basic
             closeIcon
             onClose={() => this.setState({ open: false })}
             onOpen={() => this.setState({ open: true })}
             open={this.state.open}
-            size='tiny'
-            transparent={true}
-            style={{backgroundColor: 'rgba(255, 255, 255, 0.2)'}}
         >
-            <div style={{display:'flex'}} 
-                    style={{marginBottom: 10}}>
+            <div>
             <Carousel
                     responsive={this.responsive}
                     showDots={true}
@@ -75,7 +71,7 @@ class TicketFolderModal extends React.Component {
                         }
 
                         return (
-                            <div style={{display: 'flex', marginBottom: 20, marginTop: 20}}>
+                            <div style={{display: 'flex', marginBottom: 20, marginTop: 20, color: 'black'}}>
                                 <Card style={{marginLeft: 'auto', marginRight: 'auto'}}>
                                     <div>
                                         <div style={{display: 'flex'}} >

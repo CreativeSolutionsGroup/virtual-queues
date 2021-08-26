@@ -366,6 +366,9 @@ class App extends React.Component {
           
           this.attractionModalRef.current.setState({ open: false })
           this.toastRef.current.handleOpen();
+          this.handleProfileRefresh();
+          //Refresh slot counts
+          this.getSlotTickets();
         },
         (err) => console.error(err)
       );
