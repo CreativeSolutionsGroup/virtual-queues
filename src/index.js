@@ -434,9 +434,6 @@ class App extends React.Component {
             onAttractionClick={this.handleAttractionClick}
             {...this.state}
           />
-          {/*
-            TODO: Convert this to a Portal to allow the toast to actually hover
-          */}
           <Toast ref={this.toastRef} open={false} />
         </div>
         
