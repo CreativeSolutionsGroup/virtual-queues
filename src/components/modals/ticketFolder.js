@@ -90,7 +90,7 @@ class TicketFolderModal extends React.Component {
                                             return (
                                                 <div style={{ display: 'flex', marginBottom: 20, marginTop: 20, color: 'black' }}>
                                                     <div style={{marginLeft: 'auto',marginRight: 'auto'}}>
-                                                        <QRTicket ticketID={ticket._id} imgURL={attractionImage} startTime={hideTime} name={slotName} description=""></QRTicket>
+                                                        <QRTicket ticketID={ticket._id} imageURL={attractionImage} startTime={hideTime} name={slotName} description=""></QRTicket>
                                                     </div>
                                                 </div>
                                             );

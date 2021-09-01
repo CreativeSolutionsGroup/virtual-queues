@@ -14,7 +14,6 @@ class QRTicket extends React.Component {
     render() {
         return (
             <Card>
-            <Image src={this.img} size="medium"/>
             <Card.Content>
             <Card.Header>{this.name}</Card.Header>
             
@@ -24,7 +23,7 @@ class QRTicket extends React.Component {
             
             
             </Card.Content>
-            <Image src={this.img} />
+            <Image src={this.img} size="large" wrapped/>
             <Card.Content>
             <div style={{
                     display: 'flex', alignItems: 'center', justifyContent: "center"
