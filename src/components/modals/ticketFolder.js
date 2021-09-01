@@ -3,6 +3,7 @@ import { Card, Modal, Transition } from "semantic-ui-react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import QRCode from "react-qr-code";
+import QRTicket from "../qrTicket"
 
 class TicketFolderModal extends React.Component {
     constructor(props) {
@@ -62,6 +63,7 @@ class TicketFolderModal extends React.Component {
                                         this.state.tickets.map((ticket) => {
                                             let slotName = "UNKNOWN ATTRACTION";
                                             let ticketSlot = null;
+                                            let attractionImage = "";
 
                                             for (const attractionId in this.state.slots) {
                                                 const slots = this.state.slots[attractionId];
@@ -73,6 +75,9 @@ class TicketFolderModal extends React.Component {
                                                 if (this.state.attractions[ticketSlot.attraction_id] !== undefined) {
                                                     slotName = this.state.attractions[ticketSlot.attraction_id]
                                                         .name;
+                                                    attractionImage = this.state.attractions[ticketSlot.attraction_id]
+                                                        .image_url;
+                                                    console.log(attractionImage);
                                                 }
                                             }
 
@@ -84,27 +89,9 @@ class TicketFolderModal extends React.Component {
 
                                             return (
                                                 <div style={{ display: 'flex', marginBottom: 20, marginTop: 20, color: 'black' }}>
-                                                    <Card style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                                                        <div>
-                                                            <div style={{ display: 'flex' }} >
-                                                                <div style={{ marginLeft: 'auto', marginRight: 'auto', marginTop: 10, marginBottom: 5 }}>
-                                                                    {ticket.scanned ? "Ticket Scanned" : <QRCode value={ticket._id} />}
-                                                                </div>
-                                                            </div>
-                                                            {<Card.Content>
-                                                                <Card.Header>
-                                                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                                        <div style={{ marginLeft: 'auto', marginRight: 'auto', marginBottom: 5, marginTop: 5 }} >
-                                                                            <h3>{slotName}</h3>
-                                                                        </div>
-                                                                        <div style={{ marginLeft: 'auto', marginRight: 'auto', marginBottom: 5, marginTop: 5 }} >
-                                                                            <h3>{hideTime}</h3>
-                                                                        </div>
-                                                                    </div>
-                                                                </Card.Header>
-                                                            </Card.Content>}
-                                                        </div>
-                                                    </Card>
+                                                    <div style={{marginLeft: 'auto',marginRight: 'auto'}}>
+                                                        <QRTicket ticketID={ticket._id} imgURL={attractionImage} startTime={hideTime} name={slotName} description=""></QRTicket>
+                                                    </div>
                                                 </div>
                                             );
                                         })
