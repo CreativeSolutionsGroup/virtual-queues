@@ -321,8 +321,8 @@ class App extends React.Component {
       description: attraction.description,
       img: attraction.image_url,
       isActive: isActive,
-      startTime: attraction.start_time,
-      endTime: attraction.end_time,
+      startTime: start,
+      endTime: end,
       slots: this.state.slots[id] || [],
       open: true,
     });

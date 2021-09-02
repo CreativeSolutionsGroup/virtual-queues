@@ -12,6 +12,7 @@ export default class Attraction extends React.Component {
     this.description = props.description;
     this.active = props.isActive;
     this.img = props.imageURL;
+    this.startTime = props.startTime;
     this.endTime = props.endTime;
 
     let slots = [];
@@ -74,7 +75,7 @@ export default class Attraction extends React.Component {
       [0, 0, 0]
     );
 
-    let hasSlots = numSlots > 0;
+    let hasSlots = this.state.slots.length > 0;
     return (
       <Card fluid onClick={() => this.props.onClick(this.id)}>
         <Image src={this.img} wrapped disabled={!this.active} />
@@ -90,7 +91,8 @@ export default class Attraction extends React.Component {
           </div> : ""}
           <div>
             <Icon name="clock" />
-            End Time: {displayDate(this.endTime)}
+            {/*Events without slots should display length of event and events with slots just need to show when it ends*/}
+            {hasSlots ? "End Time: "+displayDate(this.endTime) : displayDate(this.startTime) + " - " + displayDate(this.endTime)}
           </div>
         </Card.Content>
       </Card>

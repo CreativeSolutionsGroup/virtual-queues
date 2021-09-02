@@ -1,4 +1,5 @@
 export const displayDate = (date) => {
+    if(date === null || date === undefined)return "ERROR";
     let month = date.getMonth();
     let day = date.getDate();
     let hour = date.getHours();

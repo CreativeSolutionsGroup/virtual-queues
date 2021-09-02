@@ -67,6 +67,7 @@ const Events = (props) => {
               description={val.description}
               isActive={isActive}
               imageURL={val.image_url}
+              startTime={start}
               endTime={end}
               slots={slots[key]}
               onClick={onAttractionClick}
