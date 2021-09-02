@@ -18,6 +18,15 @@ class AttractionModal extends React.Component {
   }
 
   render() {
+    let hasVisibleSlots = false;
+    const now = Date.now();
+    this.state.slots.forEach(slot => {
+      const hideTime = new Date(Date.parse(slot.hide_time));
+
+      if (hideTime >= now) {
+        hasVisibleSlots = true;
+      }
+    });
     return (
       <Transition visible={this.state.open} animation='scale' duration={200}>
         <Modal
@@ -32,7 +41,7 @@ class AttractionModal extends React.Component {
             <Modal.Description>
               <Header>{this.state.name}</Header>
               <p style={{ whiteSpace: 'pre-line'}}>{this.state.description}</p>
-              {this.state.slots.length > 0 ? (
+              {hasVisibleSlots ? (
                 <AttractionsSegment
                   disabled={!this.props.isStudentSignedIn()}
                   onReserve={this.props.onReserve}
