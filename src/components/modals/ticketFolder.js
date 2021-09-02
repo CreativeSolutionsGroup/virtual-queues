@@ -85,7 +85,6 @@ class TicketFolderModal extends React.Component {
                                 <Carousel
                                     responsive={this.responsive}
                                     showDots={true}
-                                    removeArrowOnDeviceType={["tablet", "mobile"]}
                                 >
                                     {
                                         sortedTickets.map((ticket) => {
