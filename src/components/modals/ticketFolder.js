@@ -2,8 +2,8 @@ import React from "react";
 import { Card, Modal, Transition } from "semantic-ui-react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import QRCode from "react-qr-code";
 import { displayDate } from "../../utils/strings";
+import QRTicket from "../qrTicket"
 
 class TicketFolderModal extends React.Component {
     constructor(props) {
@@ -106,27 +106,9 @@ class TicketFolderModal extends React.Component {
 
                                             return (
                                                 <div style={{ display: 'flex', marginBottom: 20, marginTop: 20, color: 'black' }}>
-                                                    <Card style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                                                        <div>
-                                                            <div style={{ display: 'flex' }} >
-                                                                <div style={{ marginLeft: 'auto', marginRight: 'auto', marginTop: 10, marginBottom: 5 }}>
-                                                                    {ticket.scanned ? "Ticket Scanned" : <QRCode value={ticket._id} />}
-                                                                </div>
-                                                            </div>
-                                                            {<Card.Content>
-                                                                <Card.Header>
-                                                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                                        <div style={{ marginLeft: 'auto', marginRight: 'auto', marginBottom: 5, marginTop: 5 }} >
-                                                                            <h3>{slotName}</h3>
-                                                                        </div>
-                                                                        <div style={{ marginLeft: 'auto', marginRight: 'auto', marginBottom: 5, marginTop: 5 }} >
-                                                                            <h3>{hideTime}</h3>
-                                                                        </div>
-                                                                    </div>
-                                                                </Card.Header>
-                                                            </Card.Content>}
-                                                        </div>
-                                                    </Card>
+                                                    <div style={{marginLeft: 'auto',marginRight: 'auto'}}>
+                                                        <QRTicket ticketID={ticket._id} imageURL={attractionImage} startTime={hideTime} name={slotName} description=""></QRTicket>
+                                                    </div>
                                                 </div>
                                             );
                                         })
