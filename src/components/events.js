@@ -50,6 +50,7 @@ const Events = (props) => {
     );
   }
 
+  /*TODO Sort this by isActive*/
   return (
     <Grid stackable columns={numEventColumns}>
       {Object.entries(attractions).map(([key, val]) => {
@@ -67,6 +68,7 @@ const Events = (props) => {
               description={val.description}
               isActive={isActive}
               imageURL={val.image_url}
+              startTime={start}
               endTime={end}
               slots={slots[key]}
               onClick={onAttractionClick}

@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, Header, Image, Modal, Transition } from "semantic-ui-react";
+import { Button, Header, Image, Modal, Transition, Icon } from "semantic-ui-react";
+import { displayDate } from "../../utils/strings";
 import AttractionsSegment from "./attractionSegment";
 
 class AttractionModal extends React.Component {
@@ -14,10 +15,22 @@ class AttractionModal extends React.Component {
       slots: props.slots === undefined ? [] : props.slots,
       maxAvailable: props.maxAvailable,
       img: props.image,
+      startTime: props.startTime,
+      endTime: props.endTime
     };
   }
 
   render() {
+    let hasVisibleSlots = false;
+    const now = Date.now();
+    let hasSlots = this.state.slots.length > 0;
+    this.state.slots.forEach(slot => {
+      const hideTime = new Date(Date.parse(slot.hide_time));
+
+      if (hideTime >= now) {
+        hasVisibleSlots = true;
+      }
+    });
     return (
       <Transition visible={this.state.open} animation='scale' duration={200}>
         <Modal
@@ -32,7 +45,13 @@ class AttractionModal extends React.Component {
             <Modal.Description>
               <Header>{this.state.name}</Header>
               <p style={{ whiteSpace: 'pre-line'}}>{this.state.description}</p>
-              {this.state.slots.length > 0 ? (
+
+              <div>
+                <Icon name="clock" />
+                {/*Events without slots should display length of event and events with slots just need to show when it ends*/}
+                {hasSlots ? "End Time: "+displayDate(this.state.endTime) : displayDate(this.state.startTime) + " - " + displayDate(this.state.endTime)}
+              </div>
+              {hasVisibleSlots ? (
                 <AttractionsSegment
                   disabled={!this.props.isStudentSignedIn()}
                   onReserve={this.props.onReserve}
@@ -41,7 +60,7 @@ class AttractionModal extends React.Component {
                   hasTicket={this.props.hasTicket}
                   slotTicketsTaken={this.props.slotTicketsTaken}
                 />
-              ) : null}
+              ) : <div>No Ticket Slots Avaible Right Now</div>}
             </Modal.Description>
           </Modal.Content>
           <Modal.Actions>

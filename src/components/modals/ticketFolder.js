@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Modal, Transition } from "semantic-ui-react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import QRCode from "react-qr-code";
+import { displayDate } from "../../utils/strings";
 import QRTicket from "../qrTicket"
 
 class TicketFolderModal extends React.Component {
@@ -32,7 +32,35 @@ class TicketFolderModal extends React.Component {
         }
     };
 
+    componentDidMount(){
+        
+    }
+
     render() {
+        //Sort Tickets
+        //Sort Tickets
+        let ticketSlots = {}
+        let slotNames = {}
+
+        this.state.tickets.forEach((ticket) => {
+            for (const attractionId in this.state.slots) {
+                const slots = this.state.slots[attractionId];
+                let ticketSlot = slots.find((slot) => slot._id === ticket.slot_id);
+                if(ticketSlot != undefined){
+                    ticketSlots[ticket._id] = ticketSlot;
+                    if(this.state.attractions[ticketSlot.attraction_id] !== undefined){
+                        slotNames[ticket._id] = this.state.attractions[ticketSlot.attraction_id]
+                        .name;
+                    }
+                }
+            }
+        })
+
+        let sortedTickets = this.state.tickets.sort((a, b) => {
+            let timeA = ticketSlots[a._id] === undefined ? undefined : new Date(ticketSlots[a._id].hide_time).getTime();
+            let timeB = ticketSlots[b._id] === undefined ? undefined : new Date(ticketSlots[b._id].hide_time).getTime();
+            return timeA - timeB;
+        })
         return (
             <Transition visible={this.state.open} animation='fade up' duration={1000}>
                 <Modal
@@ -44,7 +72,7 @@ class TicketFolderModal extends React.Component {
                 >
                     <div>
                         {
-                            this.state.tickets.length === 0
+                            sortedTickets.length === 0
                                 ?
                                 <div style={{ display: 'flex', color: 'black' }}>
                                     <Card style={{ margin: 'auto' }}>
@@ -57,34 +85,23 @@ class TicketFolderModal extends React.Component {
                                 <Carousel
                                     responsive={this.responsive}
                                     showDots={true}
-                                    removeArrowOnDeviceType={["tablet", "mobile"]}
                                 >
                                     {
-                                        this.state.tickets.map((ticket) => {
+                                        sortedTickets.map((ticket) => {
                                             let slotName = "UNKNOWN ATTRACTION";
-                                            let ticketSlot = null;
-                                            let attractionImage = "";
-
-                                            for (const attractionId in this.state.slots) {
-                                                const slots = this.state.slots[attractionId];
-                                                ticketSlot = slots.find((slot) => slot._id === ticket.slot_id);
-                                                if (ticketSlot === undefined) {
-                                                    continue;
-                                                }
-
-                                                if (this.state.attractions[ticketSlot.attraction_id] !== undefined) {
-                                                    slotName = this.state.attractions[ticketSlot.attraction_id]
-                                                        .name;
-                                                    attractionImage = this.state.attractions[ticketSlot.attraction_id]
-                                                        .image_url;
-                                                    console.log(attractionImage);
-                                                }
+                                            let ticketSlot = ticketSlots[ticket._id];
+                                            
+                                            if(slotNames[ticket._id] !== undefined){
+                                                slotName = slotNames[ticket._id];
                                             }
 
+                                            if(ticketSlot === undefined || ticketSlot === null){
+                                                return "";
+                                            }
 
                                             let hideTime = "UNKNOWN TIME";
                                             if (ticketSlot != null) {
-                                                hideTime = new Date(Date.parse(ticketSlot.hide_time)).toLocaleString("en-US");
+                                                hideTime = displayDate(new Date(Date.parse(ticketSlot.hide_time)));
                                             }
 
                                             return (

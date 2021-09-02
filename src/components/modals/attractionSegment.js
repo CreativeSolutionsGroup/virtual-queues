@@ -1,4 +1,5 @@
 import { Card, Segment, Icon, Button, Popup } from "semantic-ui-react";
+import { displayDate } from "../../utils/strings";
 
 
 const AttractionsSegment = (props) => {
@@ -26,7 +27,7 @@ const AttractionsSegment = (props) => {
               <Card.Content>
                 <Card.Header>
                   <Icon name="clock outline" />
-                  {hideTime.toLocaleString("en-US")}
+                  {displayDate(hideTime)}
                 </Card.Header>
                 <div>
                   <Icon name="ticket" />

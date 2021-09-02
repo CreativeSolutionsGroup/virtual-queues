@@ -3,6 +3,7 @@ import { Header, Modal, Table, Button, Segment, Icon, Transition } from "semanti
 import QRCode from "react-qr-code";
 
 import StudentIdInput from "./studentIdInput";
+import { displayDate } from "../../utils/strings";
 
 class StudentModal extends React.Component {
   idRef = createRef();
@@ -51,7 +52,29 @@ class StudentModal extends React.Component {
 
   render() {
     const now = Date.now();
+    //Sort Tickets
+    let ticketSlots = {}
+    let slotNames = {}
 
+    this.state.tickets.forEach((ticket) => {
+      for (const attractionId in this.state.slots) {
+        const slots = this.state.slots[attractionId];
+        let ticketSlot = slots.find((slot) => slot._id === ticket.slot_id);
+        if(ticketSlot != undefined){
+          ticketSlots[ticket._id] = ticketSlot;
+          if(this.state.attractions[ticketSlot.attraction_id] !== undefined){
+            slotNames[ticket._id] = this.state.attractions[ticketSlot.attraction_id]
+              .name;
+          }
+        }
+      }
+    })
+
+    let sortedTickets = this.state.tickets.sort((a, b) => {
+      let timeA = ticketSlots[a._id] === undefined ? undefined : new Date(ticketSlots[a._id].hide_time).getTime();
+      let timeB = ticketSlots[b._id] === undefined ? undefined : new Date(ticketSlots[b._id].hide_time).getTime();
+      return timeA - timeB;
+    })
     return (
       <Transition visible={this.state.open} animation='scale' duration={200}>
         <Modal
@@ -92,29 +115,17 @@ class StudentModal extends React.Component {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {this.state.tickets.map((val) => {
+                  {sortedTickets.map((val) => {
                     // NOTE: This loop's performance likely could be improved with
                     //       some form of caching so we're not looking up names
                     //       every time.
                     // val.slot_id gives a slot ID which is used to search
                     // available slots to get the event name
                     let slotName = "UNKNOWN ATTRACTION";
-                    let ticketSlot = null;
-                    for (const attractionId in this.state.slots) {
-                      const slots = this.state.slots[attractionId];
-
-                      // Attempt to find based on slot ID
-                      ticketSlot = slots.find((slot) => slot._id === val.slot_id);
-                      if (ticketSlot === undefined) {
-                        continue;
-                      }
-
-                      // Retrieved slot name, break out of loop now
-                      if(this.state.attractions[ticketSlot.attraction_id] !== undefined){
-                        slotName = this.state.attractions[ticketSlot.attraction_id]
-                          .name;
-                      }
-                      break;
+                    let ticketSlot = ticketSlots[val._id];
+                    
+                    if(slotNames[val._id] !== undefined){
+                      slotName = slotNames[val._id];
                     }
 
                     if(ticketSlot === undefined || ticketSlot === null){
@@ -137,7 +148,7 @@ class StudentModal extends React.Component {
                             </div>
                             <div style={{marginLeft: 'auto', marginRight: 'auto', marginBottom: 5, marginTop: 5}} >
                               <h3>{
-                                hideTime.toLocaleString("en-US")
+                                displayDate(hideTime)
                               }</h3>
                             </div>
                           </div>

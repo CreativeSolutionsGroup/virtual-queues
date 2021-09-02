@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, Icon, Image } from "semantic-ui-react";
+import { displayDate } from "../utils/strings";
 
 export default class Attraction extends React.Component {
   constructor(props) {
@@ -11,6 +12,7 @@ export default class Attraction extends React.Component {
     this.description = props.description;
     this.active = props.isActive;
     this.img = props.imageURL;
+    this.startTime = props.startTime;
     this.endTime = props.endTime;
 
     let slots = [];
@@ -73,6 +75,7 @@ export default class Attraction extends React.Component {
       [0, 0, 0]
     );
 
+    let hasSlots = this.state.slots.length > 0;
     return (
       <Card fluid onClick={() => this.props.onClick(this.id)}>
         <Image src={this.img} wrapped disabled={!this.active} />
@@ -81,14 +84,15 @@ export default class Attraction extends React.Component {
           <Card.Description>{this.description}</Card.Description>
         </Card.Content>
         <Card.Content extra>
-          <div>
+          {hasSlots ? <div>
             <Icon name="ticket" />
             {maxCapacity - takenSlots}/{maxCapacity} available in {numSlots}{" "}
             slots
-          </div>
+          </div> : ""}
           <div>
             <Icon name="clock" />
-            End Time: {this.endTime.toLocaleString("en-US")}
+            {/*Events without slots should display length of event and events with slots just need to show when it ends*/}
+            {hasSlots ? "End Time: "+displayDate(this.endTime) : displayDate(this.startTime) + " - " + displayDate(this.endTime)}
           </div>
         </Card.Content>
       </Card>
