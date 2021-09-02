@@ -41,6 +41,7 @@ class TicketFolderModal extends React.Component {
         //Sort Tickets
         let ticketSlots = {}
         let slotNames = {}
+        let attractionImages = {}
 
         this.state.tickets.forEach((ticket) => {
             for (const attractionId in this.state.slots) {
@@ -51,6 +52,7 @@ class TicketFolderModal extends React.Component {
                     if(this.state.attractions[ticketSlot.attraction_id] !== undefined){
                         slotNames[ticket._id] = this.state.attractions[ticketSlot.attraction_id]
                         .name;
+                        attractionImages[ticket._id] = this.state.attractions[ticketSlot.attraction_id].image_url;
                     }
                 }
             }
@@ -90,6 +92,7 @@ class TicketFolderModal extends React.Component {
                                         sortedTickets.map((ticket) => {
                                             let slotName = "UNKNOWN ATTRACTION";
                                             let ticketSlot = ticketSlots[ticket._id];
+                                            let attractionImage = attractionImages[ticket._id];
                                             
                                             if(slotNames[ticket._id] !== undefined){
                                                 slotName = slotNames[ticket._id];
