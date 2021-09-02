@@ -50,7 +50,7 @@ class AttractionModal extends React.Component {
                   hasTicket={this.props.hasTicket}
                   slotTicketsTaken={this.props.slotTicketsTaken}
                 />
-              ) : null}
+              ) : <div>No Ticket Slots Avaible Right Now</div>}
             </Modal.Description>
           </Modal.Content>
           <Modal.Actions>
