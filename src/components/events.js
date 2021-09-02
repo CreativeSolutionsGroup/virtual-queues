@@ -50,6 +50,7 @@ const Events = (props) => {
     );
   }
 
+  /*TODO Sort this by isActive*/
   return (
     <Grid stackable columns={numEventColumns}>
       {Object.entries(attractions).map(([key, val]) => {
