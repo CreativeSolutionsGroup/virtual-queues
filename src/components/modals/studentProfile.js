@@ -3,6 +3,7 @@ import { Header, Modal, Table, Button, Segment, Icon, Transition } from "semanti
 import QRCode from "react-qr-code";
 
 import StudentIdInput from "./studentIdInput";
+import GooglePayWallet from "../googlePayWallet"
 
 class StudentModal extends React.Component {
   idRef = createRef();
@@ -150,10 +151,13 @@ class StudentModal extends React.Component {
                           </div>
                         </Table.Cell>
                         <Table.Cell collapsing>
+                          <div style={{display: 'flex', flexDirection: 'column'}}>
+                          <GooglePayWallet />
                           <Button
                             icon="delete"
                             onClick={() => this.handleRemove(val._id)}
                           />
+                          </div>
                         </Table.Cell>
                       </Table.Row>
                     );
