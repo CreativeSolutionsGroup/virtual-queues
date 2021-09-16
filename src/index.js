@@ -15,6 +15,9 @@ import "semantic-ui-css/semantic.min.css";
 import TicketFolderModal from "./components/modals/ticketFolder";
 import TicketWalletButton from "./components/ticketWalletButton";
 
+import { getMessaging, getToken } from "firebase/messaging";
+import { initializeApp } from "firebase/app";
+
 class App extends React.Component {
   contextRef = createRef();
   profileRef = createRef();
@@ -65,12 +68,39 @@ class App extends React.Component {
     this.getUnscannedStudentTicketCount = this.getUnscannedStudentTicketCount.bind(this);
   }
 
+  // Used to call getToken with the appropriate key
+  grabNotificationToken() {
+    let messaging = getMessaging();
+    getToken(messaging, { vapidKey: 'BACqm64zPco38TvpfdVa0Qp7iYkngOO6LQaPLZbsGdAiWBi1e8B7i_OcDPVD3mGJVhGzoV8ZlGqP5vfRH01HoI0' }).then((currentToken) => {
+      if (currentToken) {
+        // send token to dynamoDB
+      } else {
+        // Show permission request UI
+        console.log('No registration token available. Request permission to generate one.');
+      }
+    });
+  }
+
+  componentWillMount() {
+    const config = {
+      apiKey: "AIzaSyC4Pcrp3Wfyqr7DisaRebKLW7TPnzsCVts",
+      authDomain: "virtual-queues.firebaseapp.com",
+      projectId: "virtual-queues",
+      storageBucket: "virtual-queues.appspot.com",
+      messagingSenderId: "693345637899",
+      appId: "1:693345637899:web:5b6b2d22aaa2362979190e",
+      measurementId: "G-NGJV51HE6M"
+    };
+    initializeApp(config);
+  }
+
   componentDidMount() {
     if(window.localStorage.getItem("StudentID")){
       let student = this.state.student;
       student.id = window.localStorage.getItem("StudentID");
       this.setState({student: student})
       this.handleProfileRefresh();
+      this.grabNotificationToken();
     }
   }
 
@@ -249,7 +279,7 @@ class App extends React.Component {
   handleModalIdSubmit(id) {
     // Update local state with new student ID, retrieving new tickets after
     window.localStorage.setItem('StudentID', id);
-    
+    this.grabNotificationToken();
     this.setState(
       (prevState) => ({
         student: { ...prevState.student, id: id },
