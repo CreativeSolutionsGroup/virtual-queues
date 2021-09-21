@@ -11,6 +11,10 @@ class TicketWalletButton extends React.Component {
 
   render() {
     const ticketCount = this.getTicketCount();
+    //Hide Button if wallet is empty
+    if(ticketCount <= 0){
+        return "";
+    }
     return (
         <div>
             {

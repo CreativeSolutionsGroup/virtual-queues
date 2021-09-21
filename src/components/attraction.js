@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Icon, Image } from "semantic-ui-react";
-import { displayDate } from "../utils/strings";
+import { displayDate, displayDateRange } from "../utils/strings";
 
 export default class Attraction extends React.Component {
   constructor(props) {
@@ -14,6 +14,7 @@ export default class Attraction extends React.Component {
     this.img = props.imageURL;
     this.startTime = props.startTime;
     this.endTime = props.endTime;
+    this.location = props.location;
 
     let slots = [];
     if (props.slots !== undefined) {
@@ -80,7 +81,12 @@ export default class Attraction extends React.Component {
       <Card fluid onClick={() => this.props.onClick(this.id)}>
         <Image src={this.img} wrapped disabled={!this.active} />
         <Card.Content>
-          <Card.Header>{this.name}</Card.Header>
+          <Card.Header>
+            <div style={{ display: 'flex' }}>
+              {this.name}
+              {hasSlots ? <Icon name="ticket" size='large' style={{ marginLeft: 'auto', marginRight: 5, marginTop: 'auto', marginBottom: 'auto' }} /> : ""}
+            </div>
+          </Card.Header>
           <Card.Description>{this.description}</Card.Description>
         </Card.Content>
         <Card.Content extra>
@@ -92,8 +98,14 @@ export default class Attraction extends React.Component {
           <div>
             <Icon name="clock" />
             {/*Events without slots should display length of event and events with slots just need to show when it ends*/}
-            {hasSlots ? "End Time: "+displayDate(this.endTime) : displayDate(this.startTime) + " - " + displayDate(this.endTime)}
+            {hasSlots ? "End Time: "+displayDate(this.endTime) : displayDateRange(this.startTime, this.endTime)}
           </div>
+          {(this.location !== "" && this.location !== undefined && this.location !== "N/A") ?
+            <div>
+              <Icon name="map marker alternate" />
+              {this.location}
+            </div>
+           : ""}
         </Card.Content>
       </Card>
     );

@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Header, Image, Modal, Transition, Icon } from "semantic-ui-react";
-import { displayDate } from "../../utils/strings";
+import { displayDate, displayDateRange } from "../../utils/strings";
 import AttractionsSegment from "./attractionSegment";
 
 class AttractionModal extends React.Component {
@@ -16,7 +16,8 @@ class AttractionModal extends React.Component {
       maxAvailable: props.maxAvailable,
       img: props.image,
       startTime: props.startTime,
-      endTime: props.endTime
+      endTime: props.endTime,
+      location: props.location
     };
   }
 
@@ -49,8 +50,14 @@ class AttractionModal extends React.Component {
               <div>
                 <Icon name="clock" />
                 {/*Events without slots should display length of event and events with slots just need to show when it ends*/}
-                {hasSlots ? "End Time: "+displayDate(this.state.endTime) : displayDate(this.state.startTime) + " - " + displayDate(this.state.endTime)}
+                {hasSlots ? "End Time: "+displayDate(this.state.endTime) : displayDateRange(this.state.startTime, this.state.endTime)}
               </div>
+              {(this.state.location !== "" && this.state.location !== undefined && this.state.location !== "N/A") ?
+                <div>
+                  <Icon name="map marker alternate" />
+                  {this.state.location}
+                </div>
+              : ""}
               {hasVisibleSlots ? (
                 <AttractionsSegment
                   disabled={!this.props.isStudentSignedIn()}
@@ -60,7 +67,7 @@ class AttractionModal extends React.Component {
                   hasTicket={this.props.hasTicket}
                   slotTicketsTaken={this.props.slotTicketsTaken}
                 />
-              ) : <div>No Ticket Slots Avaible Right Now</div>}
+              ) : hasSlots ? <div>No Ticket Slots Avaible Right Now</div> : ""}
             </Modal.Description>
           </Modal.Content>
           <Modal.Actions>

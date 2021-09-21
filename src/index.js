@@ -220,10 +220,30 @@ class App extends React.Component {
 
           // Indicate attractions have been loaded
           console.debug("Attractions:", res.data);
-          let attractions = res.data.reduce((acc, val) => {
+          
+          let now = new Date();
+          
+          //Sort by start time to order events by time
+          let sortedAttractions = res.data.sort((a, b) => 
+            (new Date(a.end_time).getTime() - new Date(b.end_time).getTime())
+          );
+          //Sort by end time to order similar starting time events to be ordered by end_time
+          sortedAttractions = sortedAttractions.sort((a, b) => 
+            (new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
+          );
+          //Sort Live events over past events
+          sortedAttractions = res.data.sort((a, b) => 
+            ((now >= new Date(b.start_time) && new Date(b.end_time) >= now) ? 1 : 0) - ((now >= new Date(a.start_time) && new Date(a.end_time) >= now) ? 1 : 0)
+          );
+
+          let attractions = sortedAttractions.reduce((acc, val) => {
+            if(val.hidden == true){
+              return acc;
+            }
             acc[val._id] = val;
             return acc;
           }, {});
+
           this.setState({
             loadedAttractions: true,
             attractions: attractions,
@@ -323,6 +343,7 @@ class App extends React.Component {
       isActive: isActive,
       startTime: start,
       endTime: end,
+      location: attraction.location,
       slots: this.state.slots[id] || [],
       open: true,
     });
