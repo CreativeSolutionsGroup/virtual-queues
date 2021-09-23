@@ -237,7 +237,7 @@ class App extends React.Component {
           );
 
           let attractions = sortedAttractions.reduce((acc, val) => {
-            if(val.hidden == true){
+            if(val.hidden === true){
               return acc;
             }
             acc[val._id] = val;

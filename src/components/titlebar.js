@@ -28,7 +28,7 @@ export default class TitleBar extends React.Component {
               Profile
             </Button.Content>
           </Button>
-          <Button icon inverted size="big" onClick={this.handleHelpClick}>
+          <Button icon inverted size="big" onClick={this.handleHelpClick} aria-label='help'>
             <Button.Content visible>
               <Icon fitted name="question circle outline" />
             </Button.Content>

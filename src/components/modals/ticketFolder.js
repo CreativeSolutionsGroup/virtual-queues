@@ -47,7 +47,7 @@ class TicketFolderModal extends React.Component {
             for (const attractionId in this.state.slots) {
                 const slots = this.state.slots[attractionId];
                 let ticketSlot = slots.find((slot) => slot._id === ticket.slot_id);
-                if(ticketSlot != undefined){
+                if(ticketSlot !== undefined){
                     ticketSlots[ticket._id] = ticketSlot;
                     if(this.state.attractions[ticketSlot.attraction_id] !== undefined){
                         slotNames[ticket._id] = this.state.attractions[ticketSlot.attraction_id]

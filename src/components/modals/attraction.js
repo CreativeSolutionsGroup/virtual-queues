@@ -42,7 +42,7 @@ class AttractionModal extends React.Component {
         >
           <Modal.Header>Attraction Details</Modal.Header>
           <Modal.Content image scrolling>
-            <Image size="medium" src={this.state.img} wrapped />
+            <Image size="medium" src={this.state.img} wrapped alt={this.name} />
             <Modal.Description>
               <Header>{this.state.name}</Header>
               <p style={{ whiteSpace: 'pre-line'}}>{this.state.description}</p>

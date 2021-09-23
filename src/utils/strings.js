@@ -38,7 +38,7 @@ export const displayDateRange = (date1, date2) => {
     let pm2 = hour2 > 11;
 
     let finalStr = "";
-    if (month1 === month2 && day1 == day2) {
+    if (month1 === month2 && day1 === day2) {
         if (now.getDate() !== day1) { //Test if event is on a different day and display that date
             finalStr += (month1 + 1) + "/" + (day1) + " ";
         }
@@ -46,14 +46,14 @@ export const displayDateRange = (date1, date2) => {
     let hour1Str = hour1 === 0 ? "12" : (hour1 % 12); //If midnight then show 12
     finalStr += hour1Str + ":" + ((min1 < 10 ? '0' : '') + min1);
 
-    if (pm1 != pm2) {
+    if (pm1 !== pm2) {
         finalStr += " " + (pm1 ? "PM" : "AM");
     }
     finalStr += " - ";
-    if (month1 != month2) {
+    if (month1 !== month2) {
         finalStr += (month2 + 1) + "/";
     }
-    if (day1 != day2) { //If the second date is not on the same day display that date
+    if (day1 !== day2) { //If the second date is not on the same day display that date
         if (month1 === month2) {
             finalStr += (month2 + 1) + "/"
         }

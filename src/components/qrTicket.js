@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Icon, Image } from "semantic-ui-react";
+import { Card, Image } from "semantic-ui-react";
 import QRCode from "react-qr-code";
 
 class QRTicket extends React.Component {
@@ -23,7 +23,7 @@ class QRTicket extends React.Component {
             
             
             </Card.Content>
-            <Image src={this.img} size="large" wrapped/>
+            <Image src={this.img} size="large" wrapped alt={this.name}/>
             <Card.Content>
             <div style={{
                     display: 'flex', alignItems: 'center', justifyContent: "center"

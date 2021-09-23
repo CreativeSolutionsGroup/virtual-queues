@@ -79,7 +79,7 @@ export default class Attraction extends React.Component {
     let hasSlots = this.state.slots.length > 0;
     return (
       <Card fluid onClick={() => this.props.onClick(this.id)}>
-        <Image src={this.img} wrapped disabled={!this.active} />
+        <Image src={this.img} wrapped disabled={!this.active} alt={this.name} size='large'/>
         <Card.Content>
           <Card.Header>
             <div style={{ display: 'flex' }}>
@@ -89,7 +89,7 @@ export default class Attraction extends React.Component {
           </Card.Header>
           <Card.Description><p style={{ whiteSpace: 'pre-line'}}>{this.description}</p></Card.Description>
         </Card.Content>
-        <Card.Content extra>
+        <Card.Content extra style={{color: 'black'}}>
           {hasSlots ? <div>
             <Icon name="ticket" />
             {maxCapacity - takenSlots}/{maxCapacity} available in {numSlots}{" "}
