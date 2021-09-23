@@ -87,7 +87,7 @@ export default class Attraction extends React.Component {
               {hasSlots ? <Icon name="ticket" size='large' style={{ marginLeft: 'auto', marginRight: 5, marginTop: 'auto', marginBottom: 'auto' }} /> : ""}
             </div>
           </Card.Header>
-          <Card.Description>{this.description}</Card.Description>
+          <Card.Description><p style={{ whiteSpace: 'pre-line'}}>{this.description}</p></Card.Description>
         </Card.Content>
         <Card.Content extra>
           {hasSlots ? <div>
