@@ -18,7 +18,12 @@ import TicketWalletButton from "./components/ticketWalletButton";
 import { getMessaging, getToken } from "firebase/messaging";
 import { initializeApp } from "firebase/app";
 
+import axios from "axios";
+
+import { DynamoDBClient, BatchExecuteStatementCommand } from "@aws-sdk/client-dynamodb";
+
 class App extends React.Component {
+
   contextRef = createRef();
   profileRef = createRef();
   helpModalRef = createRef();
@@ -69,11 +74,25 @@ class App extends React.Component {
   }
 
   // Used to call getToken with the appropriate key
-  grabNotificationToken() {
+  grabNotificationToken = (student_id) => {
     let messaging = getMessaging();
-    getToken(messaging, { vapidKey: 'BACqm64zPco38TvpfdVa0Qp7iYkngOO6LQaPLZbsGdAiWBi1e8B7i_OcDPVD3mGJVhGzoV8ZlGqP5vfRH01HoI0' }).then((currentToken) => {
+    getToken(messaging, { vapidKey: 'BACqm64zPco38TvpfdVa0Qp7iYkngOO6LQaPLZbsGdAiWBi1e8B7i_OcDPVD3mGJVhGzoV8ZlGqP5vfRH01HoI0' }).then(async (currentToken) => {
       if (currentToken) {
         // send token to dynamoDB
+        const params = {
+          studentID: student_id,
+          AccessToken: currentToken
+        };
+
+
+        try {
+          const data = await axios.post("http://localhost:3001/webhook/notification_tokens", params);
+          console.log("Token successfully sent");
+        } catch (error) {
+          // error handling
+          console.log("Error sending token");
+        }
+
       } else {
         // Show permission request UI
         console.log('No registration token available. Request permission to generate one.');
@@ -100,7 +119,7 @@ class App extends React.Component {
       student.id = window.localStorage.getItem("StudentID");
       this.setState({student: student})
       this.handleProfileRefresh();
-      this.grabNotificationToken();
+      this.grabNotificationToken(student.id);
     }
   }
 
