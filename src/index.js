@@ -84,7 +84,7 @@ class App extends React.Component {
           AccessToken: currentToken
         };
 
-
+        console.log("token: " + currentToken);
         try {
           const data = await axios.post("http://localhost:3001/webhook/notification_tokens", params);
           console.log("Token successfully sent");
