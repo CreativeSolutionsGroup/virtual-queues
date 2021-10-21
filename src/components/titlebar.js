@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, Header, Icon } from "semantic-ui-react";
+import { Button, Header, Icon, Image } from "semantic-ui-react";
+import header_logo from "./../images/logo_header.png";
 
 export default class TitleBar extends React.Component {
   constructor(props) {
@@ -21,7 +22,8 @@ export default class TitleBar extends React.Component {
   render() {
     return (
       <header style={this.style}>
-        <div id="nav-buttons">
+        <Image src={header_logo} size="small"/>
+        <div id="nav-buttons" style={{marginTop: 'auto', marginBottom: 'auto'}}>
           <Button inverted icon size="big" onClick={this.handleProfileClick}>
             <Button.Content visible>
               <Icon name="user outline" />
@@ -34,7 +36,6 @@ export default class TitleBar extends React.Component {
             </Button.Content>
           </Button>
         </div>
-        <Header as="h2" content="CU Events" subheader="Virtual Queues" className="user notranslate skiptranslate" />
       </header>
     );
   }
