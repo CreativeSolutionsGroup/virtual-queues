@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, Icon, Image } from "semantic-ui-react";
 import { displayDate, displayDateRange } from "../utils/strings";
+import AsyncImage from "./async_image";
 
 export default class Attraction extends React.Component {
   constructor(props) {
@@ -79,7 +80,7 @@ export default class Attraction extends React.Component {
     let hasSlots = this.state.slots.length > 0;
     return (
       <Card fluid onClick={() => this.props.onClick(this.id)}>
-        <Image src={this.img} wrapped disabled={!this.active} alt={this.name} size='large'/>
+        <AsyncImage src={this.img} wrapped disabled={!this.active} alt={this.name} size='large'/>
         <Card.Content>
           <Card.Header>
             <div style={{ display: 'flex' }}>
