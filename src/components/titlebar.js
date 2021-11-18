@@ -1,7 +1,10 @@
 import React from "react";
-import { Button, Header, Icon } from "semantic-ui-react";
+import { Button, Header, Icon, Popup } from "semantic-ui-react";
 
 export default class TitleBar extends React.Component {
+  handleIdPopupClose() {
+    //this.setState({idPopupIsOpen: false});
+  }
   constructor(props) {
     super(props);
 
@@ -16,19 +19,39 @@ export default class TitleBar extends React.Component {
       color: "white",
       overflow: "hidden",
     };
+    if (localStorage.getItem('StudentID') === null) {
+      this.state = {
+        idPopupIsOpen: true,
+        modalOpen: this.props.modalOpen
+      };
+    }
+    else {
+      this.state = {
+        idPopupIsOpen: false,
+        modalOpen: this.props.modalOpen
+      };
+    }
+    
   }
 
   render() {
     return (
       <header style={this.style}>
         <div id="nav-buttons">
-          <Button inverted icon size="big" onClick={this.handleProfileClick}>
-            <Button.Content visible>
-              <Icon name="user outline" />
-              Profile
-            </Button.Content>
-          </Button>
-          <Button icon inverted size="big" onClick={this.handleHelpClick} aria-label='help'>
+          <Popup trigger=
+            {
+              <Button inverted icon size="big" onClick={() => {this.handleProfileClick(); this.handleIdPopupClose();}}>
+                <Button.Content visible>
+                  <Icon name="user outline" />
+                  Profile
+                </Button.Content>
+              </Button>
+            }
+            content="Please sign in here"
+            open={this.state.idPopupIsOpen && !this.state.modalOpen}
+            position='bottom left'
+          />
+          <Button icon inverted size="big" onClick={this.handleHelpClick}>
             <Button.Content visible>
               <Icon fitted name="question circle outline" />
             </Button.Content>

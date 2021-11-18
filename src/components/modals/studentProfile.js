@@ -15,6 +15,8 @@ class StudentModal extends React.Component {
     this.handleIdSubmit = props.onIdSubmit;
     this.handleRefresh = props.onRefresh;
     this.handleTicketRemove = props.onTicketRemove;
+    this.modalClose = props.modalClose;
+    this.modalOpen = props.modalOpen;
 
     // Props and state
     this.header = props.header;
@@ -24,7 +26,8 @@ class StudentModal extends React.Component {
       tickets: props.tickets === undefined ? [] : props.tickets,
       open: props.open === undefined ? false : props.open,
       studentId: props.studentId === undefined ? "000000" : props.studentId,
-      successfulIdChange: false
+      successfulIdChange: false,
+      openModal: props.openModal
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -80,8 +83,8 @@ class StudentModal extends React.Component {
         <Modal
           closeIcon
           size="large"
-          onClose={() => this.setState({ open: false })}
-          onOpen={() => this.setState({ open: true })}
+          onClose={() => {this.modalClose(); this.setState({ open: false });}}
+          onOpen={(e) => {this.modalOpen(); this.setState({ open: true });}}
           open={this.state.open}
         >
           <Modal.Header>

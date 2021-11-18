@@ -33,7 +33,8 @@ class App extends React.Component {
     },
     attractions: {},
     slots: {},
-    slotTicketCount: {}
+    slotTicketCount: {},
+    studentModalOpen: false
   };
   apiBaseURL = "https://api.cusmartevents.com/api";
 
@@ -42,6 +43,8 @@ class App extends React.Component {
 
     // Modals
     this.showStudentModal = this.showStudentModal.bind(this);
+    this.closeStudentModal = this.closeStudentModal.bind(this);
+    this.openStudentModal = this.openStudentModal.bind(this);
     this.showHelpModal = this.showHelpModal.bind(this);
     this.showHelpModal = this.showHelpModal.bind(this);
     this.handleAttractionClick = this.handleAttractionClick.bind(this);
@@ -106,6 +109,18 @@ class App extends React.Component {
 
     // Retrieve tickes and then update the modal with the current app state
     this.profileRef.current.setState({ open: true });
+    this.setState({studentModalOpen: true });
+    console.log("Open");
+  }
+
+  closeStudentModal() {
+    this.setState({studentModalOpen: false});
+    console.log("Close");
+  }
+
+  openStudentModal() {
+    this.setState({studentModalOpen: true});
+    console.log("Open");
   }
 
   /**
@@ -426,6 +441,8 @@ class App extends React.Component {
             onIdSubmit={this.handleModalIdSubmit}
             onRefresh={this.handleProfileRefresh}
             onTicketRemove={this.handleTicketRemove}
+            modalClose={this.closeStudentModal}
+            modalOpen={this.openStudentModal}
           />
           <HelpModal ref={this.helpModalRef} />
           <AttractionModal
@@ -449,6 +466,7 @@ class App extends React.Component {
             <TitleBar
               onHelpClick={this.showHelpModal}
               onProfileClick={this.showStudentModal}
+              openModal={this.state.studentModalOpen}
             />
           </Sticky>
           <Events
