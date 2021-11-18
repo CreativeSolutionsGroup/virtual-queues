@@ -14,6 +14,7 @@ import "./index.css";
 import "semantic-ui-css/semantic.min.css";
 import TicketFolderModal from "./components/modals/ticketFolder";
 import TicketWalletButton from "./components/ticketWalletButton";
+import GiveawayPopup from "./components/giveawayPopup";
 
 class App extends React.Component {
   contextRef = createRef();
@@ -464,6 +465,7 @@ class App extends React.Component {
           showTicketModal={this.showTicketModal}
         />
         <TicketFolderModal ref={this.ticketFolderRef} open={false} />
+        <GiveawayPopup open={true} getStudentId={this.getStudentId}/>
     </div>
     );
   }
