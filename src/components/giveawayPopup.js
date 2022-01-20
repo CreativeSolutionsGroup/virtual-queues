@@ -17,13 +17,19 @@ export default class GiveawayPopup extends React.Component {
       giveaway_message: "",
       start_time: "",
       end_time: "",
+      student_id: ""
     };
   }
 
   componentDidMount() {
-    checkForGiveaway();
-
-    setInterval(checkForGiveaway(),  5 * 60 * 1000); //Check for giveaway every 5 mins
+    // get the student ID
+    if(window.localStorage.getItem("StudentID")){
+      let id = window.localStorage.getItem("StudentID");
+      this.setState({student_id: id})
+      //this.handleProfileRefresh();
+    }
+    this.checkForGiveaway();
+    setInterval(this.checkForGiveaway(),  5 * 60 * 1000); //Check for giveaway every 5 mins
   }
 
   checkForGiveaway = () => {
@@ -35,14 +41,6 @@ export default class GiveawayPopup extends React.Component {
 
     let now = new Date();
 
-    this.setState({
-      open: true,
-      giveaway_id: giveaway.id,
-      event_name: "Test Giveaway",
-      giveaway_message: "This is a giveaway!",
-      start_time: "8:00 PM",
-      end_time: "10:00 PM"
-    });
     /*fetch(this.apiBaseURL + "/giveaway")
     .then((res) => res.json())
     .then(
@@ -52,11 +50,11 @@ export default class GiveawayPopup extends React.Component {
           console.error("Error:", res.message);
           return;
         }
-
+        
         let sortedGiveaways = res.data.sort((a, b) => 
-          (new Date(a.end_time).getTime() - new Date(b.end_time).getTime())
+        (new Date(a.end_time).getTime() - new Date(b.end_time).getTime())
         );
-
+        
         sortedGiveaways.forEach((giveaway) => {
           if(new Date(giveaway.start_time).getTime() <= now.getTime() && new Date(giveaway.end_time).getTime() >= now.getTime()){
             //Found a giveaway
@@ -72,8 +70,16 @@ export default class GiveawayPopup extends React.Component {
           }
         })
       });*/
-  }
-
+      this.setState({
+        open: true,
+        giveaway_id: "2",//giveaway.id,
+        event_name: "Test Giveaway",
+        giveaway_message: "This is a giveaway!",
+        start_time: "8:00 PM",
+        end_time: "10:00 PM"
+      });
+    }
+    
   handleOpen = () => {
     this.setState({ open: true });
   };
@@ -119,7 +125,7 @@ export default class GiveawayPopup extends React.Component {
                     message: this.state.giveaway_message,
                     start_time: this.state.start_time,
                     end_time: this.state.end_time,
-                    student_id: this.props.getStudentId(), 
+                    student_id: this.state.student_id, 
                     phone_number: ""
                   });
                 }}

@@ -67,6 +67,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    // get the student ID
     if(window.localStorage.getItem("StudentID")){
       let student = this.state.student;
       student.id = window.localStorage.getItem("StudentID");
